@@ -30,11 +30,6 @@ const gameSchema = new mongoose.Schema({
         required:true
     }
 
-    // productCategory: {
-    //     type: mongoose.Schema.Types.ObjectId, 
-    //     ref: productCategory, 
-    //     required: true
-    // }
 });
 
 const gameModel = mongoose.model('Game', gameSchema);

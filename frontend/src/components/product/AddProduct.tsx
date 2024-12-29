@@ -1,11 +1,15 @@
-import React, { useState } from "react";
-import { addProduct } from "../../services/api";
+import { useState } from "react";
+import { addGame } from "../../services/api";
 
 const AddProduct = () => {
-    const [productName, setProductName] = useState("");
-    const [productPrice, setProductPrice] = useState("");
-    const [productDescription, setProductDescription] = useState("");
+    const [gameName, setProductName] = useState("");
+    const [gamePrice, setProductPrice] = useState("");
+    const [gameDescription, setProductDescription] = useState("");
     const [image, setImage] = useState(null);
+    const [gamePlatform, setGamePlatform] = useState("");
+    const [gameType, setGameType] = useState("");
+
+
     const [productCategory, setProductCategory] = useState(""); // Assuming you have categories
 
     const handleSubmit = async (e) => {
@@ -13,17 +17,23 @@ const AddProduct = () => {
 
         // Create FormData for file upload and form data
         const formData = new FormData();
-        formData.append("productName", productName);
-        formData.append("productPrice", productPrice);
-        formData.append("productDescription", productDescription);
+        formData.append("gameName", gameName);
+        formData.append("gamePrice", gamePrice);
+        formData.append("gameDescription", gameDescription);
         formData.append("image", image);
+        formData.append("gamePlatform", gamePlatform);
+        formData.append("gameType", gameType);
+
+        console.log(formData.values)
+        
+
 
         try {
             // Call the addProduct API to save the product
-            await addProduct(formData);
+            await addGame(formData);
             alert("Product added successfully!");
         } catch (error) {
-            alert("Error adding product: " + error.message);
+            console.log(error)
         }
     };
 
@@ -32,20 +42,20 @@ const AddProduct = () => {
             <input
                 type="text"
                 placeholder="Product Name"
-                value={productName}
+                value={gameName}
                 onChange={(e) => setProductName(e.target.value)}
                 required
             />
             <input
                 type="number"
                 placeholder="Product Price"
-                value={productPrice}
+                value={gamePrice}
                 onChange={(e) => setProductPrice(e.target.value)}
                 required
             />
             <textarea
                 placeholder="Product Description"
-                value={productDescription}
+                value={gameDescription}
                 onChange={(e) => setProductDescription(e.target.value)}
                 required
             />
@@ -54,7 +64,23 @@ const AddProduct = () => {
                 onChange={(e) => setImage(e.target.files[0])}
                 required
             />
-          
+
+            <input
+                type="text"
+                placeholder="platform"
+                value={gamePlatform}
+                onChange={(e) => setGamePlatform(e.target.value)}
+                required
+            />
+
+            <input
+                type="text"
+                placeholder="type"
+                value={gameType}
+                onChange={(e) => setGameType(e.target.value)}
+                required
+            />
+
             <button type="submit">Add Product</button>
         </form>
     );

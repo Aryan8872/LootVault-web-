@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
-const productModel = require('../../models/GameModel');
+const gameModel = require('../../models/GameModel');
+const giftcardModel = require('../../models/GiftCardModel');
+const skinModel = require('../../models/SkinModel');
 
 // Configure multer storage for image uploads
 const storage = multer.diskStorage({
@@ -36,8 +38,8 @@ const upload = multer({
 /////////////////////////////////////////////////////////////////////////Game Controller //////////////////////////////////
 const findAllGames = async (req, res) => {
   try {
-    const products = await productModel.find();
-    res.status(200).json(products);
+    const games = await gameModel.find();
+    res.status(200).json(games);
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -47,11 +49,11 @@ const findAllGames = async (req, res) => {
 // Controller to find a product by ID
 const findGamesById = async (req, res) => {
   try {
-    const productById = await productModel.findById(req.params.id);
-    if (!productById) {
+    const gameById = await gameModel.findById(req.params.id);
+    if (!gameById) {
       return res.status(404).json({ message: 'Product not found' });
     }
-    res.status(200).json(productById);
+    res.status(200).json(gameById);
   } catch (error) {
     console.error('Error fetching product by ID:', error);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -66,28 +68,30 @@ const addGame = async (req, res) => {
     }
 
     try {
-      const { productName, productPrice, productDescription } = req.body;
+      const { gameName, gamePrice, gameDescription, gamePlatform, gameType } = req.body;
 
       // Check if all required fields are provided
-      if (!productName || !productPrice || !productDescription) {
+      if (!gameName || !gamePrice || !gameDescription) {
         return res.status(400).json({ message: 'Missing required fields' });
       }
 
       // Prepare the product data object, including the image path if uploaded
-      const productData = {
-        productName,
-        productPrice: parseFloat(productPrice), // Make sure to convert price to a number
-        productDescription,
+      const gameData = {
+        gameName,
+        gamePrice: parseFloat(gamePrice), // Make sure to convert price to a number
+        gameDescription,
+        gamePlatform,
+        gameType
       };
 
       // If there's an uploaded file, set the image path
       if (req.file) {
-        productData.productImagePath = `/uploads/${req.file.filename}`; // Save the image path
+        gameData.gameImagePath = `/uploads/${req.file.filename}`; // Save the image path
       }
 
-      const newProduct = new productModel(productData);
+      const newGame = new gameModel(gameData);
 
-      const savedProduct = await newProduct.save();
+      const savedProduct = await newGame.save();
 
       res.status(201).json(savedProduct);
     } catch (error) {
@@ -110,7 +114,7 @@ const updateGameById = async (req, res) => {
         updateData.imagePath = `/uploads/${req.file.filename}`; // Save the image path
       }
 
-      const updatedProduct = await productModel.findByIdAndUpdate(
+      const updatedProduct = await gameModel.findByIdAndUpdate(
         req.params.id,
         updateData,
         { new: true } // Return the updated document
@@ -131,7 +135,7 @@ const updateGameById = async (req, res) => {
 // Controller to delete a product by ID
 const deleteGameById = async (req, res) => {
   try {
-    const deletedProduct = await productModel.findByIdAndDelete(req.params.id);
+    const deletedProduct = await gameModel.findByIdAndDelete(req.params.id);
     if (!deletedProduct) {
       return res.status(404).json({ message: 'Product not found' });
     }
@@ -170,7 +174,7 @@ const addGiftCard = async (req,res) => {
         cardData.imagePath = `/uploads/${req.file.filename}`
       }
       //saving data to model 
-      const newCard = GiftCardModel(data);
+      const newCard = giftcardModel(data);
       const savedCard = newCard.save();
 
       res.status(201).json(savedCard)
@@ -188,7 +192,7 @@ const addGiftCard = async (req,res) => {
 
 const findGiftCardById = async (req,res) => {
   try{
-    const cardData = await GiftCardModel.findById(req.params.id);
+    const cardData = await giftcardModel.findById(req.params.id);
 
     if(!cardData){
       return res.status(404).json({message:`Card not found with id: ${req.params.id} `})
@@ -215,7 +219,7 @@ const updateGiftCardById = async (req,res) => {
         updatedCardData.imagePath = `/uploads/${req.file.filename}`
       }
 
-      const updatedCard = GiftCardModel.findByIdAndUpdate(req.params.id,updatedCardData,{new:true})
+      const updatedCard = giftcardModel.findByIdAndUpdate(req.params.id,updatedCardData,{new:true})
 
       if (!updatedCard) {
         return res.status(404).json({ message: 'Product not found' });
@@ -231,7 +235,7 @@ const updateGiftCardById = async (req,res) => {
 
 const findAllGiftCard = async (req,res) => {
   try {
-    const products = await productModel.find();
+    const products = await giftcardModel.find();
     res.status(200).json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -241,7 +245,7 @@ const findAllGiftCard = async (req,res) => {
 
 const deleteGiftCardById = async (req,res) => {
   try {
-    const deletedProduct = await productModel.findByIdAndDelete(req.params.id);
+    const deletedProduct = await giftcardModel.findByIdAndDelete(req.params.id);
     if (!deletedProduct) {
       return res.status(404).json({ message: 'Product not found' });
     }
@@ -270,7 +274,7 @@ const addSkin = async (req,res) => {
         updatedCardData.imagePath = `/uploads/${req.file.filename}`
       }
 
-      const updatedCard = GiftCardModel.findByIdAndUpdate(req.params.id,updatedCardData,{new:true})
+      const updatedCard = giftcardModel.findByIdAndUpdate(req.params.id,updatedCardData,{new:true})
 
       if (!updatedCard) {
         return res.status(404).json({ message: 'Product not found' });
@@ -286,7 +290,7 @@ const addSkin = async (req,res) => {
 
 const findSkinsById = async (req,res) => {
   try{
-    const cardData = await GiftCardModel.findById(req.params.id);
+    const cardData = await giftcardModel.findById(req.params.id);
 
     if(!cardData){
       return res.status(404).json({message:`Card not found with id: ${req.params.id} `})
@@ -314,7 +318,7 @@ const updateSkinsById = async (req,res) => {
         updatedCardData.imagePath = `/uploads/${req.file.filename}`
       }
 
-      const updatedCard = GiftCardModel.findByIdAndUpdate(req.params.id,updatedCardData,{new:true})
+      const updatedCard = skinModel.findByIdAndUpdate(req.params.id,updatedCardData,{new:true})
 
       if (!updatedCard) {
         return res.status(404).json({ message: 'Product not found' });
@@ -330,7 +334,7 @@ const updateSkinsById = async (req,res) => {
 
 const findAllSkins = async () => {
   try {
-    const products = await productModel.find();
+    const products = await skinModel.find();
     res.status(200).json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -341,7 +345,7 @@ const findAllSkins = async () => {
 
 const deleteSkinsById = async (req,res) => {
   try {
-    const deletedProduct = await productModel.findByIdAndDelete(req.params.id);
+    const deletedProduct = await skinModel.findByIdAndDelete(req.params.id);
     if (!deletedProduct) {
       return res.status(404).json({ message: 'Product not found' });
     }

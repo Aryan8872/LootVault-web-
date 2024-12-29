@@ -37,6 +37,6 @@ const skinSchema = new mongoose.Schema({
     // }
 });
 
-const skinModel = mongoose.model('Game', skinSchema);
+const skinModel = mongoose.model('Skin', skinSchema);
 
 module.exports = skinModel;

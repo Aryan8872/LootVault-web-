@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getProducts } from "../../services/api";
+import { getGames } from "../../services/api";
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
         const fetchProducts = async () => {
-            const data = await getProducts();
+            const data = await getGames();
             setProducts(data);
         };
         fetchProducts();
