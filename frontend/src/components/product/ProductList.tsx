@@ -17,7 +17,16 @@ const ProductList = () => {
             <h1>Product List</h1>
             <ul>
                 {products.map((product) => (
-                    <li key={product._id}>{product.name}</li>
+                    <li key={product._id}>
+                        <h2>{product.name}</h2>
+                        {product.imagePath && (
+                            <img
+                                src={`http://localhost:3000${product.imagePath}`}
+                                alt={product.name}
+                                style={{ width: "100px", height: "100px" }} // Adjust image size as needed
+                            />
+                        )}
+                    </li>
                 ))}
             </ul>
         </div>

@@ -2,20 +2,20 @@ import axios from 'axios';
 
 const API_BASE_URL = "http://localhost:3000/api";
 
-export const getProducts = async () => {
-    const response = await axios.get(`${API_BASE_URL}/products`);
+export const getGames = async () => {
+    const response = await axios.get(`${API_BASE_URL}/game`);
     return response.data;
 };
 
-export const getProductById = async (id) => {
-    const response = await axios.get(`${API_BASE_URL}/products/${id}`);
+export const getGameById = async (id) => {
+    const response = await axios.get(`${API_BASE_URL}/game/${id}`);
     return response.data;
 };
 
 
-export const addProduct = async (formData) => {
+export const addGame = async (formData) => {
     try {
-        const response = await axios.post('http://localhost:3000/api/products/add', formData, {
+        const response = await axios.post(`${API_BASE_URL}/game/add`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data', // Important for file uploads
             },
@@ -30,5 +30,5 @@ export const addProduct = async (formData) => {
 
 
 export const deleteProduct = async (id) => {
-    await axios.delete(`${API_BASE_URL}/products/${id}`);
+    await axios.delete(`${API_BASE_URL}/game/${id}`);
 };
