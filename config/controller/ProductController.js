@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
-const productModel = require('../../models/ProductModel');
+const productModel = require('../../models/GameModel');
 
 // Configure multer storage for image uploads
 const storage = multer.diskStorage({

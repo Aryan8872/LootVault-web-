@@ -1,26 +1,34 @@
 const mongoose = require('mongoose');
 const productCategory = require('./ProductCategory');
 
-const productSchema = new mongoose.Schema({
-    productName: {
+const skinSchema = new mongoose.Schema({
+    skinName: {
         type: String,
         required: true
     },
 
-    productPrice: {
+    skinPrice: {
         type: Number, // Use Number instead of Int16Array
         required: true
     },
 
-    productDescription: {
+    skinDescription: {
         type: String,
         required: true
     },
 
-    productImagePath: {
+    skinImagePath: {
         type: String,
         required: true
     },
+    skinPlatform:{
+        type:String,
+        required:true
+    }
+    , skinType:{
+        type:String,
+        required:true
+    }
 
     // productCategory: {
     //     type: mongoose.Schema.Types.ObjectId, 
@@ -29,6 +37,6 @@ const productSchema = new mongoose.Schema({
     // }
 });
 
-const productModel = mongoose.model('Product', productSchema);
+const skinModel = mongoose.model('Game', skinSchema);
 
-module.exports = productModel;
+module.exports = skinModel;
