@@ -1,8 +1,11 @@
 const express = require("express");
 const cors = require("cors")
 const connectdb = require("./config/db");
-const userRoute = require("./routes/CustomerRouter"); // Ensure this file exists and is correctly named
-const productRoute = require("./routes/ProductRoute");
+const userRoute = require("./routes/CustomerRouter"); 
+const GameRouter = require("./routes/GameRouter");
+const skinRouter = require("./routes/SkinsRouter");
+const GiftCardRouter = require('./routes/GiftCardRouter')
+
 
 const app = express();
 
@@ -20,7 +23,10 @@ app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/user", userRoute);
-app.use("/api/products", productRoute);
+app.use("/api/game", GameRouter);
+app.use("/api/skins", skinRouter);
+app.use("/api/giftcard", GiftCardRouter);
+
 
 // Root route handler
 app.get("/", (req, res) => {
