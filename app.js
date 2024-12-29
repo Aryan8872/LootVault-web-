@@ -1,6 +1,8 @@
 const express = require("express");
+const cors = require("cors")
 const connectdb = require("./config/db");
 const userRoute = require("./routes/CustomerRouter"); // Ensure this file exists and is correctly named
+const productRoute = require("./routes/ProductRoute");
 
 const app = express();
 
@@ -10,11 +12,15 @@ connectdb();
 // Middleware for parsing JSON
 app.use(express.json());
 
+
+app.use(cors());
+
 // Serve static files (e.g., images)
 app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/user", userRoute);
+app.use("/api/products", productRoute);
 
 // Root route handler
 app.get("/", (req, res) => {

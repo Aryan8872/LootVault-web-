@@ -58,21 +58,34 @@ const findProductById = async (req, res) => {
 
 // Controller to add a new product, including image upload
 const addProduct = async (req, res) => {
+  // Use multer's upload.single middleware to handle file uploads
   upload.single('image')(req, res, async (err) => {
     if (err) {
       return res.status(400).json({ message: err.message });
     }
 
     try {
+      const { productName, productPrice, productDescription } = req.body;
+
+      // Check if all required fields are provided
+      if (!productName || !productPrice || !productDescription ) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
+
+      // Prepare the product data object, including the image path if uploaded
       const productData = {
-        ...req.body,
+        productName,
+        productPrice: parseFloat(productPrice), // Make sure to convert price to a number
+        productDescription,
       };
 
+      // If there's an uploaded file, set the image path
       if (req.file) {
-        productData.imagePath = `/uploads/${req.file.filename}`; // Save the image path
+        productData.productImagePath = `/uploads/${req.file.filename}`; // Save the image path
       }
 
       const newProduct = new productModel(productData);
+
       const savedProduct = await newProduct.save();
 
       res.status(201).json(savedProduct);
@@ -82,6 +95,7 @@ const addProduct = async (req, res) => {
     }
   });
 };
+
 
 // Controller to update a product by ID, including image upload
 const updateProductById = async (req, res) => {
