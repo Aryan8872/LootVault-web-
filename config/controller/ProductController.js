@@ -48,18 +48,24 @@ const findAllGames = async (req, res) => {
 
 // Controller to find a product by ID
 const findGamesById = async (req, res) => {
+  const { id } = req.params;
+
+  // Validate ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "Invalid ID format" });
+  }
+
   try {
-    const gameById = await gameModel.findById(req.params.id);
-    if (!gameById) {
-      return res.status(404).json({ message: 'Product not found' });
+    const game = await Game.findById(id);
+    if (!game) {
+      return res.status(404).json({ error: "Game not found" });
     }
-    res.status(200).json(gameById);
+    res.status(200).json(game);
   } catch (error) {
-    console.error('Error fetching product by ID:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error fetching game by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
-
 const addGame = async (req, res) => {
   // Use multer's upload.single middleware to handle file uploads
   upload.single('image')(req, res, async (err) => {
@@ -358,6 +364,12 @@ const deleteSkinsById = async (req,res) => {
 }
 
 
+
+
+
+
+
+
 module.exports = {
   findAllGames,
   findAllGiftCard,
@@ -377,5 +389,6 @@ module.exports = {
 
   deleteGameById,
   deleteGiftCardById,
-  deleteSkinsById
+  deleteSkinsById,
+
 };

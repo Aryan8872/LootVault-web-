@@ -8,7 +8,7 @@ const giftcardSchema = new mongoose.Schema({
     },
 
     giftcardPrice: {
-        type: Number, // Use Number instead of Int16Array
+        type: Number, 
         required: true
     },
 
@@ -23,7 +23,7 @@ const giftcardSchema = new mongoose.Schema({
     },
     giftcardPlatform:{
         type:String,
-        required:true
+        required:true 
     }
     , giftcardType:{
         type:String,

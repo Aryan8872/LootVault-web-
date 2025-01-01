@@ -31,3 +31,17 @@ export const addGame = async (formData) => {
 export const deleteProduct = async (id) => {
     await axios.delete(`${API_BASE_URL}/game/${id}`);
 };
+
+
+export const fetchSortedGames = async (sortBy, order) => {
+    try {
+      const params = { sortBy, order }; // Only include sortBy and order
+      const response = await axios.get(`${API_BASE_URL}/game/sorted`, { params });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching sorted games:", error);
+      throw error;
+    }
+  };
+  
+
