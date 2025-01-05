@@ -1,10 +1,12 @@
 const express = require("express");
 const cors = require("cors")
+require('dotenv').config();
 const connectdb = require("./config/db");
 const userRoute = require("./routes/CustomerRouter"); 
 const GameRouter = require("./routes/GameRouter");
 const skinRouter = require("./routes/SkinsRouter");
 const GiftCardRouter = require('./routes/GiftCardRouter')
+const authRoute  = require("./routes/authRoute")
 
 
 const app = express();
@@ -17,14 +19,12 @@ app.use(express.json());
 
 app.use(cors());
 
-//Routes for users 
 
-users=[]
 
-app.use("/api/users",(req,res)=>{
-  res.json(users)
 
-})
+//Routes for auth 
+app.use("/api/user",authRoute)
+
 
 // Serve static files (e.g., images)
 app.use("/uploads", express.static("uploads"));
@@ -34,6 +34,7 @@ app.use("/api/user", userRoute);
 app.use("/api/game", GameRouter);
 app.use("/api/skins", skinRouter);
 app.use("/api/giftcard", GiftCardRouter);
+
 
 
 // Root route handler
