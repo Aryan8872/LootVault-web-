@@ -1,4 +1,5 @@
 const  mongoose = require("mongoose")
+const bcrypt = require("bcrypt")
 const { user } = require("../../models/UserModel")
 
 const findAll = async(req,res)=>{
@@ -9,9 +10,12 @@ const findAll = async(req,res)=>{
 
 const createUser = async(req,res)=>{
     try{
-    const newuser = new user(req.body) ;
-    await newuser.save()
-    res.status(201).json(newuser);
+        const salt = await bcrypt.genSalt()
+        userData = req.body
+        userData.password =await bcrypt.hash( userData.password,salt)
+        const newuser = new user(userData) ;
+        await newuser.save()
+        res.status(201).json({message:newuser,salt:salt});
     }
     catch(e){
         console.log(e)

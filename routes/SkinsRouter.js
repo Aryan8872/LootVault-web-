@@ -1,15 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const {
-    findAllSkins,
     findSkinsById,
 
     addSkin,
 
     deleteSkinsById,
-    updateSkinsById
+    updateSkinsById,
+    findAllSkins
 
-} = require("../config/controller/ProductController");
+} = require("../config/controller/SkinController");
 
 
 // Game routes

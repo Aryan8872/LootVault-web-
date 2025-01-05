@@ -9,7 +9,7 @@ const {
     deleteGiftCardById,
     updateGiftCardById
 
-} = require("../config/controller/ProductController");
+} = require("../config/controller/GiftCardController");
 
 
 // Game routes

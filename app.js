@@ -15,13 +15,21 @@ connectdb();
 // Middleware for parsing JSON
 app.use(express.json());
 
-
 app.use(cors());
+
+//Routes for users 
+
+users=[]
+
+app.use("/api/users",(req,res)=>{
+  res.json(users)
+
+})
 
 // Serve static files (e.g., images)
 app.use("/uploads", express.static("uploads"));
 
-// Routes
+// Routes for products 
 app.use("/api/user", userRoute);
 app.use("/api/game", GameRouter);
 app.use("/api/skins", skinRouter);
