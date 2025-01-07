@@ -8,11 +8,13 @@ const skinRouter = require("./routes/SkinsRouter");
 const GiftCardRouter = require('./routes/GiftCardRouter');
 const authRoute = require("./routes/authRoute");
 const authenticateToken = require("./middlewares/authMiddleWare");
+const seedDatabase = require("./scripts/seed");
 
 const app = express();
 
 // Connect to the database
 connectdb();
+
 
 // Middleware for parsing JSON
 app.use(express.json());

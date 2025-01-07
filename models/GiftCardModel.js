@@ -1,42 +1,38 @@
 const mongoose = require('mongoose');
-const productCategory = require('./ProductCategory');
 
-const giftcardSchema = new mongoose.Schema({
+const giftCardSchema = new mongoose.Schema({
     giftcardName: {
         type: String,
         required: true
     },
-
     giftcardPrice: {
-        type: Number, 
+        type: Number,
         required: true
     },
-
     giftcardDescription: {
         type: String,
         required: true
     },
-
     giftcardImagePath: {
         type: String,
         required: true
     },
-    giftcardPlatform:{
-        type:String,
-        required:true 
+    giftcardPlatform: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Platform',
+        required: true
+    },
+    giftcardType: {
+        type: String,
+        required: true
+    },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'GiftCardCategory',
+        required: true
     }
-    , giftcardType:{
-        type:String,
-        required:true
-    }
-
-    // productCategory: {
-    //     type: mongoose.Schema.Types.ObjectId, 
-    //     ref: productCategory, 
-    //     required: true
-    // }
 });
 
-const giftcardModel = mongoose.model('GiftCard', giftcardSchema);
+const giftCardModel = mongoose.model('GiftCard', giftCardSchema);
 
-module.exports = giftcardModel;
+module.exports = giftCardModel;

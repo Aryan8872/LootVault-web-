@@ -68,7 +68,7 @@ const findAllGames =  async (req, res) => {
       }
   
       try {
-        const { gameName, gamePrice, gameDescription, gamePlatform, gameType } = req.body;
+        const { gameName, gamePrice, gameDescription, gamePlatform, gameType,popularity,category } = req.body;
   
         // Check if all required fields are provided
         if (!gameName || !gamePrice || !gameDescription) {
@@ -81,7 +81,9 @@ const findAllGames =  async (req, res) => {
           gamePrice: parseFloat(gamePrice), // Make sure to convert price to a number
           gameDescription,
           gamePlatform,
-          gameType
+          gameType,
+          popularity,
+          category
         };
   
         // If there's an uploaded file, set the image path
