@@ -1,3 +1,4 @@
+const skinModel = require("../../models/SkinModel")
 const { upload } = require("./ProductController")
 
 const addSkin = async (req,res) => {
@@ -14,7 +15,7 @@ const addSkin = async (req,res) => {
           updatedCardData.imagePath = `/uploads/${req.file.filename}`
         }
   
-        const updatedCard = giftcardModel.findByIdAndUpdate(req.params.id,updatedCardData,{new:true})
+        const updatedCard = skinModel.findByIdAndUpdate(req.params.id,updatedCardData,{new:true})
   
         if (!updatedCard) {
           return res.status(404).json({ message: 'Product not found' });
@@ -30,7 +31,7 @@ const addSkin = async (req,res) => {
   
   const findSkinsById = async (req,res) => {
     try{
-      const cardData = await giftcardModel.findById(req.params.id);
+      const cardData = await skinModel.findById(req.params.id);
   
       if(!cardData){
         return res.status(404).json({message:`Card not found with id: ${req.params.id} `})
@@ -72,7 +73,7 @@ const addSkin = async (req,res) => {
   
   }
   
-  const findAllSkins = async () => {
+  const findAllSkins = async (req,res) => {
     try {
       const products = await skinModel.find();
       res.status(200).json(products);

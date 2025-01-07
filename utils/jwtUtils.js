@@ -1,14 +1,22 @@
 const jwt = require('jsonwebtoken');
-const secretKey = process.env.ACCESS_JWT_SECRET;
-
-if (!secretKey) {
+const secretAccessKey = process.env.ACCESS_JWT_SECRET;
+const secretRefreshKey = process.env.REFRESH_JWT_SECRET;
+if (!secretAccessKey) {
     throw new Error("ACcESS_JWT_SECRET is not defined in the environment variables.");
 }
 
-exports.generateToken = (payload) => {
-    return jwt.sign(payload, secretKey, { expiresIn: '1h' });
-};
+if (!secretRefreshKey) {
+    throw new Error("REFRESH_JWT_SECRET is not defined in the environment variables.");
+}
 
-exports.verifyToken = (token) => {
-    return jwt.verify(token, secretKey);
+exports.generateAccessToken = (payload) => {
+    return jwt.sign(payload, secretAccessKey, { expiresIn: '15m' });
+};
+exports.generateRefreshToken = (payload)=>{
+    return jwt.sign(payload, secretRefreshKey);
+
+}
+
+exports.verifyAccessToken = (token) => {
+    return jwt.verify(token, secretAccessKey);
 };

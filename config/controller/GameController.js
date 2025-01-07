@@ -1,3 +1,4 @@
+const gameModel = require("../../models/GameModel");
 const { upload } = require("./ProductController");
 
 const findAllGames =  async (req, res) => {
@@ -49,7 +50,7 @@ const findAllGames =  async (req, res) => {
     }
   
     try {
-      const game = await Game.findById(id);
+      const game = await gameModel.findById(id);
       if (!game) {
         return res.status(404).json({ error: "Game not found" });
       }

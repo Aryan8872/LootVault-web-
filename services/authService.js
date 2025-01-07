@@ -8,5 +8,9 @@ exports.login = async (email, password) => {
     if (!userData || !(await bcrypt.compare(password, userData.password))) {
         throw new Error('Invalid email or password');
     }
-    return jwt.generateToken({ id: userData.email });
+    const accessToken = jwt.generateAccessToken({ id: userData.email })
+    const refreshToken = jwt.generateRefreshToken({id:userData.email})
+
+    return({accesstoken:accessToken , refreshtoken:refreshToken})
+    
 };
