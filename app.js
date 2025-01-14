@@ -7,8 +7,13 @@ const GameRouter = require("./routes/GameRouter");
 const skinRouter = require("./routes/SkinsRouter");
 const GiftCardRouter = require('./routes/GiftCardRouter');
 const authRoute = require("./routes/authRoute");
+const gameCategoryRouter = require("./routes/GameCategoryRouter")
+const gamePlatformRouter = require("./routes/GamePlatformRoute")
+
 const authenticateToken = require("./middlewares/authMiddleWare");
-const seedDatabase = require("./scripts/seed");
+
+
+// const seedDatabase = require("./scripts/seed");
 
 const app = express();
 
@@ -27,9 +32,15 @@ app.use("/api/user", authRoute);
 app.use("/uploads", express.static("uploads"));
 
 // Secure routes for products
-app.use("/api/game", authenticateToken, GameRouter);
+app.use("/api/game", GameRouter);
 app.use("/api/skins", authenticateToken, skinRouter);
 app.use("/api/giftcard", authenticateToken, GiftCardRouter);
+
+//routes for categories 
+app.use("/api/category/game",gameCategoryRouter);
+
+//routes for platofrom
+app.use("/api/platform/game",gamePlatformRouter);
 
 // Root route handler
 app.get("/", (req, res) => {

@@ -1,3 +1,4 @@
+const giftCardModel = require("../../models/GiftCardModel");
 const { upload } = require("./ProductController");
 
 const addGiftCard = async (req,res) => {
@@ -27,7 +28,7 @@ const addGiftCard = async (req,res) => {
           cardData.imagePath = `/uploads/${req.file.filename}`
         }
         //saving data to model 
-        const newCard = giftcardModel(data);
+        const newCard = giftCardModel(data);
         const savedCard = newCard.save();
   
         res.status(201).json(savedCard)
@@ -45,7 +46,7 @@ const addGiftCard = async (req,res) => {
   
   const findGiftCardById = async (req,res) => {
     try{
-      const cardData = await giftcardModel.findById(req.params.id);
+      const cardData = await giftCardModel.findById(req.params.id);
   
       if(!cardData){
         return res.status(404).json({message:`Card not found with id: ${req.params.id} `})
@@ -72,7 +73,7 @@ const addGiftCard = async (req,res) => {
           updatedCardData.imagePath = `/uploads/${req.file.filename}`
         }
   
-        const updatedCard = giftcardModel.findByIdAndUpdate(req.params.id,updatedCardData,{new:true})
+        const updatedCard = giftCardModel.findByIdAndUpdate(req.params.id,updatedCardData,{new:true})
   
         if (!updatedCard) {
           return res.status(404).json({ message: 'Product not found' });
@@ -88,7 +89,7 @@ const addGiftCard = async (req,res) => {
   
   const findAllGiftCard = async (req,res) => {
     try {
-      const products = await giftcardModel.find();
+      const products = await giftCardModel.find();
       res.status(200).json(products);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -98,7 +99,7 @@ const addGiftCard = async (req,res) => {
   
   const deleteGiftCardById = async (req,res) => {
     try {
-      const deletedProduct = await giftcardModel.findByIdAndDelete(req.params.id);
+      const deletedProduct = await giftCardModel.findByIdAndDelete(req.params.id);
       if (!deletedProduct) {
         return res.status(404).json({ message: 'Product not found' });
       }

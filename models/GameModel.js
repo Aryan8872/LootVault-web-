@@ -20,16 +20,13 @@ const gameSchema = new mongoose.Schema({
     gamePlatform: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Platform',
-        required: true
+        required: true 
     },
     gameType: {
         type: String,
         required: true
     },
-    popularity: {
-        type: Number,
-        required: true
-    },
+
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'GameCategory',
