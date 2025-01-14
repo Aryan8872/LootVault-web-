@@ -107,10 +107,7 @@ const AddProduct = () => {
 
 
     const renderCombobox = () => {
-
-
         console.log(selectedGameCategory)
-
         if (gameCategories.length === 0) return <p>Loading categories...</p>;
 
         return (
@@ -186,8 +183,6 @@ const AddProduct = () => {
                         ))}
                     </ComboboxOptions>
                 </Combobox>
-
-
             </div>
         )
     };

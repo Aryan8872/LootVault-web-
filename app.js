@@ -31,6 +31,19 @@ app.use("/api/user", authRoute);
 // Serve static files (e.g., images)
 app.use("/uploads", express.static("uploads"));
 
+app.get('/api/images/:imageName', (req, res) => {
+    const imageName = req.params.imageName;
+    const imagePath = path.join(__dirname, 'images', imageName);
+
+    // Check if the file exists
+    res.sendFile(imagePath, (err) => {
+        if (err) {
+            console.error(err);
+            res.status(404).send({ error: 'Image not found' });
+        }
+    });
+});
+
 // Secure routes for products
 app.use("/api/game", GameRouter);
 app.use("/api/skins", authenticateToken, skinRouter);

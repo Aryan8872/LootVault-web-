@@ -1,16 +1,25 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import AddProduct from './components/product/AddProduct'
-import ProductList from "./components/product/ProductList";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import HomePage from "./components/home/HomePage";
+import AddProduct from './components/product/AddProduct';
+import RootLayout from "./components/root/RootLayout";
+import { CartProvider } from "./components/product/CartContext";
 const App = () => {
     return (
-        <Router>
-            <Routes>
-                <Route path="/products" element={<ProductList/>} />
-                <Route path="/add-product" element={<AddProduct />} />
-                <Route path = "/home" element = {<HomePage/>}/>
-            </Routes>
+        <CartProvider>
+              <Router>
+            <Routes >
+                <Route element={<HomePage />} >
+                    <Route index element={<HomePage />} />
+                    <Route path="/add-game" element={<AddProduct />} />
+
+
+                </Route>
+
+            </Routes >
         </Router>
+        </CartProvider>
+      
+
     );
 };
 
