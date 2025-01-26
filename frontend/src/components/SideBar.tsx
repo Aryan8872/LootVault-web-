@@ -15,7 +15,7 @@ export interface SidebarContextType {
 }
 
 // components/Sidebar/index.tsx
-import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react";
+import { ChevronLast, List, MoreVertical } from "lucide-react";
 import { useState } from 'react';
 
 interface SidebarProps {
@@ -35,17 +35,18 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                             }`}
                         alt="Logo"
                     /> */}
-                    {expanded &&
+                    {/* {expanded &&
 
                         <div className={`text-xl md:text-2xl font-medium font-patternbold text-logo-blue `}>
                             LOOTVAULT
-                        </div>}
+                        </div>} */}
 
                     <button
                         onClick={() => setExpanded((curr) => !curr)}
                         className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100"
                     >
-                        {expanded ? <ChevronFirst /> : <ChevronLast />}
+                        {expanded ? <List size={32} className="md:w-10 lg:w-12" />
+                            : <ChevronLast />}
                     </button>
                 </div>
 

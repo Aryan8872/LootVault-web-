@@ -8,7 +8,7 @@ const App = () => {
         <CartProvider>
               <Router>
             <Routes >
-                <Route element={<HomePage />} >
+                <Route element={<RootLayout />} >
                     <Route index element={<HomePage />} />
                     <Route path="/add-game" element={<AddProduct />} />
 

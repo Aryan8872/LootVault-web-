@@ -8,7 +8,7 @@ export const NavBar: React.FC = () => {
 
     return (
         <>
-            <div className="flex overflow-hidden flex-row px-4 md:px-8 lg:px-16 py-4 bg-white shadow-sm">
+            <div className="flex overflow-hidden w-full flex-row px-4 md:px-8 lg:px-16 py-4 bg-white shadow-sm">
                 <div className="flex items-center justify-between w-full">
                     {/* Left Section */}
                     <div className="flex items-center justify-between min-w-[150px] md:min-w-[200px] lg:min-w-[250px]">
@@ -42,7 +42,7 @@ export const NavBar: React.FC = () => {
 
                         {/* Auth Buttons - Hidden on mobile */}
                         <div className="hidden md:flex  w-auto lg:gap-4">
-                            <button className="btn btn-outline btn-neutral w-24 lg:w-28 border-white bg-logo-blue text-white">Sign In</button>
+                            <button className="btn btn-outline btn-neutral w-24 lg:w-28 border-white bg-main_blue text-white">Sign In</button>
                             <button className="btn btn-outline btn-neutral w-24 lg:w-28 border-logo-blue shadow-md text-logo-blue">Sign Up</button>
                         </div>
 
