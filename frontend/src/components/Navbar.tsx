@@ -1,9 +1,15 @@
 import { List, Plus } from "@phosphor-icons/react";
 import * as React from "react";
 import { useState } from "react";
-import { SearchBar } from "./SearchBar";
+import { useNavigate } from "react-router-dom"; // Correct import for hook
+import { useAuth } from "../contexts/AuthContext/AuthContext";
+import { SearchBar } from "./home/search/SearchBar";
 
 export const NavBar: React.FC = () => {
+    const navigate = useNavigate();  // Initialize useNavigate hook
+    const { user } = useAuth(); // Consume the email from context
+
+
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
@@ -18,9 +24,13 @@ export const NavBar: React.FC = () => {
                         >
                             <List size={32} className="md:w-10 lg:w-12" />
                         </button>
-                        <div className="text-xl md:text-2xl font-medium font-patternbold text-logo-blue">
+                        <div
+                            onClick={() => navigate("/")}
+
+                            className="text-xl md:text-2xl font-medium font-patternbold text-logo-blue cursor-pointer">
                             LOOTVAULT
                         </div>
+                 
                     </div>
 
                     {/* Center Section - Search Bar */}
@@ -30,19 +40,26 @@ export const NavBar: React.FC = () => {
 
                     {/* Right Section */}
                     <div className="flex justify-between flex-row items-center gap-2 lg:gap-4">
-                        <button className="hidden md:block btn btn-neutral btn-secondary w-24 lg:flex flex-row w-[8.3rem] bg-inherit shadow-md text-logo-blue border-logo-blue">
-                        <Plus size={26} />
+                        <button
+                            onClick={() => navigate("/add-game")} // Navigate on click
+                            className="hidden md:block btn btn-neutral btn-secondary w-24 lg:flex flex-row w-[8.3rem] bg-inherit shadow-md text-logo-blue border-logo-blue">
+                            <Plus size={26}
+                            />
                             Add Item
                         </button>
 
                         {/* Mobile Add Button */}
-                        <button className="md:hidden btn btn-sm btn-neutral btn-secondary  text-white border-inherit">
+                        <button className="md:hidden btn btn-sm btn-neutral btn-secondary  text-white border-inherit"
+                        >
                             Add
                         </button>
 
                         {/* Auth Buttons - Hidden on mobile */}
                         <div className="hidden md:flex  w-auto lg:gap-4">
-                            <button className="btn btn-outline btn-neutral w-24 lg:w-28 border-white bg-main_blue text-white">Sign In</button>
+                            <button
+                                onClick={() => navigate("/login")} // Navigate on click
+
+                                className="btn btn-outline btn-neutral w-24 lg:w-28 border-white bg-main_blue text-white">Sign In</button>
                             <button className="btn btn-outline btn-neutral w-24 lg:w-28 border-logo-blue shadow-md text-logo-blue">Sign Up</button>
                         </div>
 
@@ -54,6 +71,8 @@ export const NavBar: React.FC = () => {
                                 <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
                             </div>
                         </div>
+
+
                     </div>
                 </div>
             </div>
@@ -62,6 +81,7 @@ export const NavBar: React.FC = () => {
             <div className="md:hidden px-4 py-2 bg-white border-t">
                 <SearchBar />
             </div>
+
 
             {/* Mobile Menu */}
             {isMobileMenuOpen && (

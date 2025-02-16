@@ -6,7 +6,7 @@ import axios from 'axios';
 const ProductCard = ({ product }) => {
 
     
-
+    console.log(`image name${product.gameImagePath} `)
 
     const { addToCart } = useCart();
 
@@ -25,7 +25,7 @@ const ProductCard = ({ product }) => {
 
             <div className="relative ">
                 <img
-                    src={`http://localhost:3000${product.gameImagePath}`}
+                    src={`http://localhost:3000/public/uploads/${product.gameImagePath}`}
                     alt={product.gameName}
                     className="w-full h-[12rem] rounded-lg"
                 />
@@ -48,9 +48,6 @@ const ProductCard = ({ product }) => {
                 </div>
             </div>
 
-            <div className='text-[#616161] text-[0.8rem] font-nunitoregular' >
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            </div>
 
 
             <div className="flex items-center gap-2">
@@ -67,9 +64,9 @@ const ProductCard = ({ product }) => {
 
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="text-gray-400 line-through text-[1rem] font-nunitoregular">${product.gamePrice}</span>
-                    <span className="text-blue-600 text-sm font-nunitoregular">{0}%</span>
-                    <span className="text-[1.2rem] font-bold font-nunitoregular">${0}</span>
+                    <span className="text-gray-400  text-[1rem] font-nunitoregular">${product.gamePrice}</span>
+                    {/* <span className="text-blue-600 text-sm font-nunitoregular">{0}%</span>
+                    <span className="text-[1.2rem] font-bold font-nunitoregular">${0}</span> */}
                 </div>
 
                 <div className='flex flex-wrap gap-2'>

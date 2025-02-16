@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../middlewares/uploads") 
 
 const gameModel = require("../models/GameModel");
 const { advancedSearchGames, 
@@ -17,7 +18,7 @@ router.get("/search", searchGames)
 router.get("/",findAllGames );
 
 // Parameter routes should come last
-router.post("/add", addGame);
+router.post("/add",addGame);
 router.get("/:id", findGamesById);
 router.delete("/:id", deleteGameById);
 router.patch("/:id", updateGameById);

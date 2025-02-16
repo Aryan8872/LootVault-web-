@@ -4,6 +4,6 @@ const router = express.Router()
 const getAllCategories = require("../config/controller/GameCategoryController")
 
 
-router.get("/",getAllCategories)
+router.get("/all",getAllCategories)
 
 module.exports = router;

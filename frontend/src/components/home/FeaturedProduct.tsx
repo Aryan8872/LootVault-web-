@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import ProductCard from '../product/ProductCard';
+import useAxiosInterceptor from "../../interceptors/AxiosInstance";
+
 
 const FeaturedProduct = () => {
 
@@ -27,6 +29,8 @@ const FeaturedProduct = () => {
     const [games, setGames] = useState<Game[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const axiosInstance = useAxiosInterceptor(); // Use Axios interceptor
+
 
     useEffect(() => {
         getAllGames()
@@ -35,7 +39,7 @@ const FeaturedProduct = () => {
     async function getAllGames() {
         try {
             setLoading(true)
-            const response = await axios.get<ApiResponse>('http://localhost:3000/api/game/')
+            const response = await axiosInstance.get<ApiResponse>('/game/')
             const { games: gamesData } = response.data
             setGames(gamesData)
         } catch (e) {

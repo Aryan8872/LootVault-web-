@@ -2,6 +2,10 @@ import axios from 'axios';
 import React, { Suspense, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Diamond, Gamepad2 } from 'lucide-react';
 import { Cards, Coin } from '@phosphor-icons/react';
+import ShiftProductPage from './attract';
+import NewAndUpcomingReleases from './new';
+import New2 from './new2';
+import NewGames from './NewGames';
 const LazyTrendingOffer = React.lazy(()=>import('./TrendingOffers'))
 const LazyFeaturedProduct = React.lazy(()=>import('./FeaturedProduct'))
 const LazyFeaturedCategory = React.lazy(()=>import('./FeaturedCategory'))
@@ -122,7 +126,12 @@ const HomePage = () => {
     <LazyFeaturedCategory/>
     <LazyFeaturedProduct/>
     <LazyTrendingOffer/>
-    <LazyBestSelling products={products}/>
+    <LazyBestSelling />
+    {/* <LazyGames/> */}
+    <NewAndUpcomingReleases/>
+    <NewGames/>
+    <New2/>
+    <ShiftProductPage/>
    </Suspense>
 
 

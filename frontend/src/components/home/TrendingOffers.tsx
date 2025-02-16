@@ -1,8 +1,10 @@
 
 const TrendingOffers = () => {
     return (
-        <div className='flex flex-col justify-center gap-8 p-8 object-cover sm:flex-row sm:items-start' style={{ backgroundImage: "url('/src/assets/logo/bg4.jpg')" }}>
-            <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 w-full sm:w-[22rem] h-[54vh] sm:max-h-[54vh] flex flex-col">
+        <div className='relative flex flex-col justify-center gap-8 p-8 object-cover sm:flex-row sm:items-start' style={{ backgroundImage: "url('/src/assets/logo/icebg.jpg')" }}>
+              <div className=" z-0 absolute inset-0 bg-black opacity-15"></div>
+
+            <div className=" z-10 bg-white/50 backdrop-blur-lg border border-white/25 p-6 sm:p-8 w-full sm:w-[22rem] h-[54vh] sm:max-h-[54vh] flex flex-col">
                 <div className="flex items-center justify-between mb-4">
                     <span className="font-bold text-xl text-gray-800">Flash Deal</span>
                     <div className="bg-yellow-500 text-white font-semibold px-3 py-1 rounded-full text-sm">Limited Time</div>
@@ -17,7 +19,7 @@ const TrendingOffers = () => {
                 </div>
             </div>
 
-            <div className='flex flex-col gap-8 w-full sm:w-auto'>
+            <div className='z-10 flex flex-col gap-8 w-full sm:w-auto'>
                 <span className='font-nunitobold text-slate-100 text-2xl'>More Currently Trending offers</span>
                 <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-2">
                     {[1, 2, 3, 4].map((item) => (

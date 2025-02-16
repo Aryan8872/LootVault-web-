@@ -1,18 +1,18 @@
 const express = require("express");
+import {Request,Response} from "express"
+import path from "path";
 const cors = require("cors");
 require('dotenv').config();
 const connectdb = require("./config/db");
-const userRoute = require("./routes/CustomerRouter");
 const GameRouter = require("./routes/GameRouter");
 const skinRouter = require("./routes/SkinsRouter");
 const GiftCardRouter = require('./routes/GiftCardRouter');
-const authRoute = require("./routes/authRoute");
+const customerRoute = require("./routes/CustomerRouter")
+const upload = require("./middlewares/uploads.js")
+import authRoute from "./routes/authRoute";
+import authenticateToken from "./middlewares/authMiddleWare";
 const gameCategoryRouter = require("./routes/GameCategoryRouter")
 const gamePlatformRouter = require("./routes/GamePlatformRoute")
-
-const authenticateToken = require("./middlewares/authMiddleWare");
-
-
 // const seedDatabase = require("./scripts/seed");
 
 const app = express();
@@ -25,13 +25,16 @@ connectdb();
 app.use(express.json());
 app.use(cors());
 
+
+app.use("/api/userData",authenticateToken,customerRoute );
+
 // Routes for auth
-app.use("/api/user", authRoute);
+app.use("/api/auth",authRoute );
 
 // Serve static files (e.g., images)
-app.use("/uploads", express.static("uploads"));
+app.use("/public/uploads", express.static(path.join(__dirname, "public", "uploads")));
 
-app.get('/api/images/:imageName', (req, res) => {
+app.get('/api/images/:imageName', (req:Request, res:Response) => {
     const imageName = req.params.imageName;
     const imagePath = path.join(__dirname, 'images', imageName);
 
@@ -43,11 +46,11 @@ app.get('/api/images/:imageName', (req, res) => {
         }
     });
 });
-
+app.use("/api/user",authRoute)
 // Secure routes for products
-app.use("/api/game", GameRouter);
-app.use("/api/skins", authenticateToken, skinRouter);
-app.use("/api/giftcard", authenticateToken, GiftCardRouter);
+app.use("/api/game",authenticateToken, GameRouter);
+app.use("/api/skins", skinRouter);
+app.use("/api/giftcard", GiftCardRouter);
 
 //routes for categories 
 app.use("/api/category/game",gameCategoryRouter);
@@ -55,8 +58,16 @@ app.use("/api/category/game",gameCategoryRouter);
 //routes for platofrom
 app.use("/api/platform/game",gamePlatformRouter);
 
+app.use("/api/customer",upload,(req:Request, res:Response) => {
+    if (!req.file) {
+      return res.status(400).send({ error: "No file uploaded" });
+    }
+  
+    res.send({ message: "File uploaded successfully", file: req.file });
+  });
+
 // Root route handler
-app.get("/", (req, res) => {
+app.get("/", (req:Request, res:Response) => {
     res.send("Welcome to the API!");
 });
 

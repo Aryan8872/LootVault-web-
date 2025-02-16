@@ -1,4 +1,15 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
+
+
+interface IGame extends Document {
+    gameName: string;
+    gamePrice: string;
+    gameDescription: string;
+    gameImagePath: string;
+    gamePlatform: mongoose.Schema.Types.ObjectId;
+    category: string;
+  }
+
 
 const gameSchema = new mongoose.Schema({
     gameName: {
@@ -15,25 +26,21 @@ const gameSchema = new mongoose.Schema({
     },
     gameImagePath: {
         type: String,
-        required: true
+        required: false
     },
-    gamePlatform: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Platform',
-        required: true 
-    },
-    gameType: {
-        type: String,
-        required: true
-    },
-
+    
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'GameCategory',
         required: true
+    },
+    gamePlatform:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Platform',
+        required: true
     }
 });
 
-const gameModel = mongoose.model('Game', gameSchema);
+const gameModel:mongoose.Model<IGame> = mongoose.model<IGame>('Game', gameSchema);
 
 module.exports = gameModel;

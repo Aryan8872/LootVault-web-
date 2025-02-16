@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon app.ts"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,16 @@
     "nodemon": "^3.1.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "swiper": "^7.3.1"
+    "swiper": "^7.3.1",
+    "web-api-development": "file:"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.8",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.13.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   }
 }
