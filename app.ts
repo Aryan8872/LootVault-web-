@@ -71,6 +71,12 @@ app.get("/", (req:Request, res:Response) => {
     res.send("Welcome to the API!");
 });
 
+
+// app.use("/api/user", require("./routes/userRoutes"));
+
+app.use("/api/forum", require("./routes/forumRoutes"));
+
+
 // Start the server
 const port = 3000;
 app.listen(port, () => {

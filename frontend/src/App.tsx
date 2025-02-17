@@ -8,6 +8,9 @@ import RootLayout from "./components/root/RootLayout";
 import { AuthProvider } from "./contexts/AuthContext/AuthContext";
 import { useEffect } from "react";
 import { useAuth } from './contexts/AuthContext/AuthContext';
+import EcommerceUI from "./components/order/ShoppingCart";
+import ForumApp from "./components/forum/PostForm";
+import ForumHomepage from "./components/forum/ForumHome";
 
 const App = () => {
   return (
@@ -42,6 +45,8 @@ const AuthWrapper = () => {
           <Route index element={<HomePage />} />
           <Route path="/add-game" element={<AddProduct />} />
           <Route path="/search" element={<SearchResults />} />
+          <Route path = "/orders" element={EcommerceUI()}/>
+          <Route path = "/forum" element = {<ForumHomepage/>}/>
         </Route>
       </Routes>
     </Router>

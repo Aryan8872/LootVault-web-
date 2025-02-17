@@ -33,7 +33,7 @@ const Login = () => {
 
 
                 // Store the user data and token in context
-                login(accessToken, refreshToken);
+                login(accessToken, refreshToken,user);
 
                 // Check the user's role and navigate accordingly
                 if (user.role === 'seller') {

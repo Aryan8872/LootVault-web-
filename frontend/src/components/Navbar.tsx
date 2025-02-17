@@ -53,6 +53,8 @@ export const NavBar: React.FC = () => {
                         >
                             Add
                         </button>
+                        <span onClick={()=>navigate("/forum")}>Forum</span>
+
 
                         {/* Auth Buttons - Hidden on mobile */}
                         <div className="hidden md:flex  w-auto lg:gap-4">

@@ -7,7 +7,9 @@ interface IUser extends Document {
     phoneNo: string;
     password: string;
     image?: string;
-    role: "buyer" | "seller" | "admin"; 
+    role: "buyer" | "seller" | "admin";
+    posts: mongoose.Types.ObjectId[];
+    comments: mongoose.Types.ObjectId[];
 }
 
 const userSchema: Schema = new Schema({
@@ -18,7 +20,10 @@ const userSchema: Schema = new Schema({
     password: { type: String, required: true },
     image: { type: String, required: false },
     role: { type: String, enum: ["buyer", "seller", "admin"], default: "buyer" },
+    posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
 });
 
 const userModel: mongoose.Model<IUser> = mongoose.model<IUser>("User", userSchema);
+
 export { userModel, IUser };

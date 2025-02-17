@@ -1,0 +1,320 @@
+import { Request, Response } from "express";
+import mongoose, { Types } from "mongoose";
+import { IComment, PostModel } from "../../models/forumPostModel";
+
+interface ForumRequest extends Request {
+    user?: {
+        id: Types.ObjectId;
+        role: string;
+    };
+}
+// Create a new post
+const createPost = async (req: ForumRequest, res: Response) => {
+    try {
+        const { title, content } = req.body;
+        const user = req.body.user// Assuming req.user is available from middleware
+        
+        // if (!user) {
+        //     return res.status(401).json({ message: 'Unauthorized' });
+        // }
+        console.log(req.body)
+
+        const newPost = new PostModel({ user, title, content });
+        const savedPost = await newPost.save();
+
+        res.status(201).json(savedPost);
+    } catch (error) {
+        console.error('Error creating post:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+// Get all posts with pagination
+const getAllPosts = async (req: ForumRequest, res: Response) => {
+    try {
+        const page = parseInt(req.query.page as string) - 1 || 0;
+        const limit = parseInt(req.query.limit as string) || 10;    
+
+        const posts = await PostModel.find()
+            .populate("user", "username")
+            .populate("comments.user", "username")
+            .sort({ createdAt: -1 })
+            .skip(page * limit)
+            .limit(limit);
+
+        const total = await PostModel.countDocuments();
+        const totalPages = Math.ceil(total / limit);
+        const hasMore = page < totalPages - 1;
+
+        res.status(200).json({ total, totalPages, currentPage: page + 1, limit, hasMore, posts });
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
+const likePost = async (req: ForumRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+        const user = req.body.user;
+
+        if (!user || !user.id) {
+            return res.status(400).json({ message: 'Invalid user data' });
+        }
+
+        const userId = new mongoose.Types.ObjectId(user.id);
+
+        // Fetch the post and populate likes
+        const post = await PostModel.findById(id).populate('likes', '_id');
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // Check if the user already liked the post
+        const likeIndex = post.likes.findIndex((like: mongoose.Types.ObjectId) => like.equals(userId));
+        if (likeIndex > -1) {
+            // Remove the like if already liked
+            post.likes.splice(likeIndex, 1);
+        } else {
+            // Add the like if not already liked
+            post.likes.push(userId);
+        }
+
+        // Save the updated post
+        await post.save();
+
+        // Respond with the updated post
+        res.status(200).json(post);
+    } catch (error) {
+        console.error('Error processing like/unlike:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+const dislikePost = async (req: ForumRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+        const user = req.body.user.id; // Assuming req.user is available from middleware
+
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const userId = new mongoose.Types.ObjectId(user); // Ensure userId is an ObjectId
+
+        // Fetch the post and populate dislikes
+        const post = await PostModel.findById(id).populate('dislikes', '_id');
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // Check if the user has already disliked the post
+        const dislikeIndex = post.dislikes.findIndex((dislike: mongoose.Types.ObjectId) => dislike.equals(userId));
+
+        if (dislikeIndex > -1) {
+            // Remove the dislike if already disliked
+            post.dislikes.splice(dislikeIndex, 1);
+        } else {
+            // Add the dislike if not already disliked
+            post.dislikes.push(userId);
+        }
+
+        // Save the updated post
+        await post.save();
+
+        // Respond with the updated post
+        res.status(200).json(post);
+    } catch (error) {
+        console.error('Error disliking post:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
+
+const addComment = async (req: ForumRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { content } = req.body;
+        const user = req.body.user.id; // Assuming req.user is available from middleware
+        console.log(user);
+        console.log(content);
+
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        if (!content) {
+            return res.status(400).json({ message: 'Content is required' });
+        }
+
+        const post = await PostModel.findById(id);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        const newComment = {
+            user: user as Types.ObjectId,
+            content,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        } as IComment; // Type assertion here
+
+        console.log("New Comment:", newComment); // Log for debugging
+
+        post.comments.push(newComment);
+
+        const updatedPost = await post.save(); // Save the updated post
+        res.status(201).json(updatedPost.comments[updatedPost.comments.length - 1]);
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
+// Edit a comment
+const editComment = async (req: ForumRequest, res: Response) => {
+    try {
+        const { postId, commentId } = req.params;
+        const { content } = req.body;
+        const user = req.user?.id; // Assuming req.user is available from middleware
+
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const post = await PostModel.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        const commentIndex = post?.comments.findIndex(
+            (c: IComment) => c._id.toString() === commentId
+        ); if (commentIndex === -1) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        const comment = post.comments[commentIndex];
+        if (comment.user.toString() !== user.toString()) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        comment.content = content;
+        comment.updatedAt = new Date();
+        await post.save();
+
+        res.status(200).json(comment);
+    } catch (error) {
+        console.error('Error editing comment:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+// Delete a comment
+const deleteComment = async (req: ForumRequest, res: Response) => {
+    try {
+        const { postId, commentId } = req.params;
+        const user = req.user?.id; // Assuming req.user is available from middleware
+
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const post = await PostModel.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        const commentIndex = post.comments.findIndex(c => c._id.toString() === commentId);
+        if (commentIndex === -1) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        const comment = post.comments[commentIndex];
+        if (comment.user.toString() !== user.toString()) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        post.comments = post.comments.filter(c => c._id.toString() !== commentId);
+        await post.save();
+
+        res.status(200).json({ message: 'Comment deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting comment:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+// Delete a post
+const deletePost = async (req: ForumRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+        const user = req.user?.id; // Assuming req.user is available from middleware
+
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const post = await PostModel.findById(id);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        if (post.user.toString() !== user.toString()) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        await PostModel.findByIdAndDelete(id);
+
+        res.status(200).json({ message: 'Post deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+// Edit a post
+const editPost = async (req: ForumRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { title, content } = req.body;
+        const user = req.user?.id; // Assuming req.user is available from middleware
+
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const post = await PostModel.findById(id);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        if (post.user.toString() !== user.toString()) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        post.title = title;
+        post.content = content;
+        post.updatedAt = new Date();
+        await post.save();
+
+        res.status(200).json(post);
+    } catch (error) {
+        console.error('Error editing post:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+module.exports = {
+    createPost,
+    getAllPosts,
+    likePost,
+    dislikePost,
+    addComment,
+    editComment,
+    deleteComment,
+    deletePost,
+    editPost,
+};

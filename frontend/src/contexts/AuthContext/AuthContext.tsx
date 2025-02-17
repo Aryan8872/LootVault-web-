@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react";
+import React, { createContext, ReactNode, useState } from "react";
 
 // Define types for the user and context
 interface User {
@@ -11,8 +11,9 @@ interface User {
 interface AuthContextType {
   isAuthenticated: boolean;
   accessToken:string,
+  userData:User,
   refreshAccessToken: () => Promise<string>
-  login: (token: string, refreshToken: string) => void;
+  login: (token: string, refreshToken: string,user:User) => void;
   logout: () => void;
 }
 
@@ -28,104 +29,19 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string>('');
   const [refreshToken, setRefreshToken] = useState<string>('');
+  const [userData, setUser] = useState<User>({});
 
 
 
-  // Helper function to check token expiry
-  // const isTokenExpired = async (token: string): Promise<boolean> => {
-  //   try {
-  //     const response = await fetch("http://localhost:3000/api/check-token", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     if (!response.ok) {
-  //       const data = await response.json();
-  //       console.error("Token is invalid or expired:", data.message);
-  //       return true;
-  //     }
-
-  //     return false; // Token is valid
-  //   } catch (error) {
-  //     console.error("Error checking token expiry:", error);
-  //     return true; // Treat as expired in case of error
-  //   }
-  // };
 
 
-  // // Function to fetch user data from backend
-  // const fetchUser = async (token: string) => {
-  //   try {
-  //     const response = await fetch("http://localhost:3000/api/user/getUser", {
-  //       method: "GET",
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to authenticate");
-  //     }
-
-  //     const data = await response.json();
-  //     setUser(data.user);
-  //     setIsAuthenticated(true);
-  //   } catch (error) {
-  //     console.error("Error fetching user data:", error);
-  //     setUser(null);
-  //     setIsAuthenticated(false);
-  //     localStorage.removeItem("token"); // Clear invalid token
-  //   }
-  // };
-
-  // const refreshAuthToken = async (storedRefreshToken: string | null) => {
-  //   if (!storedRefreshToken) {
-  //     console.error("No refresh token available.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch("/api/refresh-token", {
-  //       method: "POST",
-  //       body: JSON.stringify({ refreshToken: storedRefreshToken }),
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to refresh token");
-  //     }
-
-  //     const data = await response.json();
-  //     const newToken = data.token;
-  //     const newRefreshToken = data.refreshToken;
-
-  //     // Store new tokens
-  //     localStorage.setItem("token", newToken);
-  //     localStorage.setItem("refreshToken", newRefreshToken);
-
-  //     setToken(newToken);
-  //     setRefreshToken(newRefreshToken);
-  //     fetchUser(newToken);
-  //   } catch (error) {
-  //     console.error("Error refreshing token:", error);
-  //     setUser(null);
-  //     setIsAuthenticated(false);
-  //     localStorage.removeItem("token");
-  //     localStorage.removeItem("refreshToken");
-  //   }
-  // };
-
-  const login = (authToken: string,refreshToken:string) => {
+  const login = (authToken: string,refreshToken:string,user:User) => {
     if (!authToken) {
       console.error("No token or refresh token provided!");
       return;
     }
 
+    setUser(user)
     setIsAuthenticated(true);
     setRefreshToken(refreshToken)
     setAccessToken(authToken);
@@ -182,7 +98,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
 
   return (
-    <AuthContext.Provider value={{ accessToken,refreshAccessToken,isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ accessToken,refreshAccessToken,isAuthenticated,userData, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
