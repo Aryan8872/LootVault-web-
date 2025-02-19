@@ -11,6 +11,8 @@ import { useAuth } from './contexts/AuthContext/AuthContext';
 import EcommerceUI from "./components/order/ShoppingCart";
 import ForumApp from "./components/forum/PostForm";
 import ForumHomepage from "./components/forum/ForumHome";
+import PostDetail from "./components/forum/PostDetail";
+import SocialFeed from "./components/forum/Forum2";
 
 const App = () => {
   return (
@@ -44,9 +46,11 @@ const AuthWrapper = () => {
         <Route element={<RootLayout />}>
           <Route index element={<HomePage />} />
           <Route path="/add-game" element={<AddProduct />} />
+          <Route path="/post/:id" element={<PostDetail/>} />
           <Route path="/search" element={<SearchResults />} />
           <Route path = "/orders" element={EcommerceUI()}/>
           <Route path = "/forum" element = {<ForumHomepage/>}/>
+          <Route path = "/forum2" element = {<SocialFeed/>}/>
         </Route>
       </Routes>
     </Router>

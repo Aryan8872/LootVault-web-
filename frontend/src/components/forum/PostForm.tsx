@@ -30,23 +30,36 @@ const PostForm = ({ onCreate, auth }: Props) => {
     }
   };
 
-
   return (
-    <form onSubmit={handleSubmit} className="post-form">
-      <h2>Create New Post</h2>
-      <input
-        type="text"
-        placeholder="Title"
-        value={newPost.title}
-        onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-      />
-      <textarea
-        placeholder="Content"
-        value={newPost.content}
-        onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-      />
-      <button type="submit">Post</button>
-    </form>
+    <>
+      <div className="bg-white rounded-lg shadow p-4 mb-4">
+        <form onSubmit={handleSubmit}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-emerald-100 rounded-full" />
+            <input
+
+              type="text"
+              placeholder='Title"'
+              className="flex-1 border rounded-lg px-4 py-2"
+              value={newPost.title}
+              onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder='Content"'
+              value={newPost.content}
+              onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+              className="flex-1 border rounded-lg px-4 py-2"
+            />
+          </div>
+          <button
+            className='flex self-end'
+            type="submit">Post</button>
+
+        </form>
+      </div>
+
+    </>
   );
 };
 

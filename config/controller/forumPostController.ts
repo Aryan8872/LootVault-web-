@@ -13,7 +13,7 @@ const createPost = async (req: ForumRequest, res: Response) => {
     try {
         const { title, content } = req.body;
         const user = req.body.user// Assuming req.user is available from middleware
-        
+
         // if (!user) {
         //     return res.status(401).json({ message: 'Unauthorized' });
         // }
@@ -32,24 +32,31 @@ const createPost = async (req: ForumRequest, res: Response) => {
 // Get all posts with pagination
 const getAllPosts = async (req: ForumRequest, res: Response) => {
     try {
+        const { search } = req.query;
         const page = parseInt(req.query.page as string) - 1 || 0;
-        const limit = parseInt(req.query.limit as string) || 10;    
+        const limit = 2;
 
-        const posts = await PostModel.find()
-            .populate("user", "username")
-            .populate("comments.user", "username")
+        let query: any = {};
+        if (search) {
+            query = {
+                $or: [
+                    { title: { $regex: search, $options: "i" } },
+                    { content: { $regex: search, $options: "i" } },
+                ],
+            };
+        }
+
+        const posts = await PostModel.find(query)
+            .populate("user", "_id username email")
             .sort({ createdAt: -1 })
             .skip(page * limit)
             .limit(limit);
 
-        const total = await PostModel.countDocuments();
-        const totalPages = Math.ceil(total / limit);
-        const hasMore = page < totalPages - 1;
-
-        res.status(200).json({ total, totalPages, currentPage: page + 1, limit, hasMore, posts });
+        const total = await PostModel.countDocuments(query);
+        res.status(200).json({ total, posts, currentPage: page + 1 });
     } catch (error) {
-        console.error('Error fetching posts:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error("Error fetching posts:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
@@ -65,11 +72,14 @@ const likePost = async (req: ForumRequest, res: Response) => {
 
         const userId = new mongoose.Types.ObjectId(user.id);
 
-        // Fetch the post and populate likes
-        const post = await PostModel.findById(id).populate('likes', '_id');
+        // Fetch the post and populate likes & dislikes
+        const post = await PostModel.findById(id).populate('likes dislikes', '_id');
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
         }
+
+        // Remove dislike if the user had previously disliked
+        post.dislikes = post.dislikes.filter((dislike: mongoose.Types.ObjectId) => !dislike.equals(userId));
 
         // Check if the user already liked the post
         const likeIndex = post.likes.findIndex((like: mongoose.Types.ObjectId) => like.equals(userId));
@@ -92,26 +102,29 @@ const likePost = async (req: ForumRequest, res: Response) => {
     }
 };
 
+
 const dislikePost = async (req: ForumRequest, res: Response) => {
     try {
         const { id } = req.params;
-        const user = req.body.user.id; // Assuming req.user is available from middleware
+        const user = req.body.user;
 
-        if (!user) {
-            return res.status(401).json({ message: 'Unauthorized' });
+        if (!user || !user.id) {
+            return res.status(400).json({ message: 'Invalid user data' });
         }
 
-        const userId = new mongoose.Types.ObjectId(user); // Ensure userId is an ObjectId
+        const userId = new mongoose.Types.ObjectId(user.id);
 
-        // Fetch the post and populate dislikes
-        const post = await PostModel.findById(id).populate('dislikes', '_id');
+        // Fetch the post and populate likes & dislikes
+        const post = await PostModel.findById(id).populate('likes dislikes', '_id');
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
         }
 
-        // Check if the user has already disliked the post
-        const dislikeIndex = post.dislikes.findIndex((dislike: mongoose.Types.ObjectId) => dislike.equals(userId));
+        // Remove like if the user had previously liked
+        post.likes = post.likes.filter((like: mongoose.Types.ObjectId) => !like.equals(userId));
 
+        // Check if the user already disliked the post
+        const dislikeIndex = post.dislikes.findIndex((dislike: mongoose.Types.ObjectId) => dislike.equals(userId));
         if (dislikeIndex > -1) {
             // Remove the dislike if already disliked
             post.dislikes.splice(dislikeIndex, 1);
@@ -130,6 +143,7 @@ const dislikePost = async (req: ForumRequest, res: Response) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
 
 
 
@@ -251,49 +265,31 @@ const deleteComment = async (req: ForumRequest, res: Response) => {
 const deletePost = async (req: ForumRequest, res: Response) => {
     try {
         const { id } = req.params;
-        const user = req.user?.id; // Assuming req.user is available from middleware
-
-        if (!user) {
-            return res.status(401).json({ message: 'Unauthorized' });
-        }
+        const user = req.user?.id;
 
         const post = await PostModel.findById(id);
-        if (!post) {
-            return res.status(404).json({ message: 'Post not found' });
-        }
+        if (!post) return res.status(404).json({ message: "Post not found" });
 
-        if (post.user.toString() !== user.toString()) {
-            return res.status(403).json({ message: 'Unauthorized' });
-        }
 
         await PostModel.findByIdAndDelete(id);
-
-        res.status(200).json({ message: 'Post deleted successfully' });
+        res.status(200).json({ message: "Post deleted successfully" });
     } catch (error) {
-        console.error('Error deleting post:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error("Error deleting post:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
 // Edit a post
 const editPost = async (req: ForumRequest, res: Response) => {
-    try {
+ try {
         const { id } = req.params;
         const { title, content } = req.body;
-        const user = req.user?.id; // Assuming req.user is available from middleware
-
-        if (!user) {
-            return res.status(401).json({ message: 'Unauthorized' });
-        }
+        const user = req.user?.id;
 
         const post = await PostModel.findById(id);
-        if (!post) {
-            return res.status(404).json({ message: 'Post not found' });
-        }
+        if (!post) return res.status(404).json({ message: "Post not found" });
 
-        if (post.user.toString() !== user.toString()) {
-            return res.status(403).json({ message: 'Unauthorized' });
-        }
+
 
         post.title = title;
         post.content = content;
@@ -302,8 +298,8 @@ const editPost = async (req: ForumRequest, res: Response) => {
 
         res.status(200).json(post);
     } catch (error) {
-        console.error('Error editing post:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error("Error editing post:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
