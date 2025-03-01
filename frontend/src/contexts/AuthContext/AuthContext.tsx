@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { createContext, ReactNode, useState } from "react";
+import React, { createContext, ReactNode, useState, useEffect } from "react";
 
 // Define types for the user and context
 interface User {
@@ -10,10 +10,10 @@ interface User {
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  accessToken:string,
-  userData:User,
-  refreshAccessToken: () => Promise<string>
-  login: (token: string, refreshToken: string,user:User) => void;
+  accessToken: string;
+  userData: User | null;
+  refreshAccessToken: () => Promise<string | null>;
+  login: (token: string, refreshToken: string, user: User) => void;
   logout: () => void;
 }
 
@@ -27,44 +27,62 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // AuthProvider component to manage authentication state
 const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [accessToken, setAccessToken] = useState<string>('');
-  const [refreshToken, setRefreshToken] = useState<string>('');
-  const [userData, setUser] = useState<User>({});
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [userData, setUser] = useState<User | null>(null);
 
+  // Load authentication data from localStorage when the component mounts
+  useEffect(() => {
+    const storedToken = localStorage.getItem("accessToken");
+    const storedRefreshToken = localStorage.getItem("refreshToken");
+    const storedUser = localStorage.getItem("userData");
 
+    if (storedToken && storedRefreshToken && storedUser) {
+      setAccessToken(storedToken);
+      setRefreshToken(storedRefreshToken);
+      setUser(JSON.parse(storedUser));
+      setIsAuthenticated(true);
+    }
+  }, []);
 
-
-
-  const login = (authToken: string,refreshToken:string,user:User) => {
-    if (!authToken) {
+  const login = (authToken: string, refreshToken: string, user: User) => {
+    if (!authToken || !refreshToken) {
       console.error("No token or refresh token provided!");
       return;
     }
 
-    setUser(user)
+    setUser(user);
     setIsAuthenticated(true);
-    setRefreshToken(refreshToken)
+    setRefreshToken(refreshToken);
     setAccessToken(authToken);
-    console.log(`access token: ${accessToken}`)
 
+    // Store tokens and user in localStorage for persistence
+    localStorage.setItem("accessToken", authToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("userData", JSON.stringify(user));
   };
 
-  const refreshAccessToken = async () => {
+  const refreshAccessToken = async (): Promise<string | null> => {
     try {
-      const response = await axios.post("http://localhost:3000/api/user/refresh", 
-        { refreshToken },  // Send refreshToken in the body
+      const response = await axios.post(
+        "http://localhost:3000/api/user/refresh",
+        { refreshToken }, // Send refreshToken in the body
         {
-          // Optional: Add headers if needed (e.g., for authentication)
           headers: {
-            "Content-Type": "application/json", // Set content type to JSON
+            "Content-Type": "application/json",
           },
         }
       );
-      setAccessToken(response.data.accessToken);
-      return response.data.accessToken;
+
+      const newAccessToken = response.data.accessToken;
+      setAccessToken(newAccessToken);
+      localStorage.setItem("accessToken", newAccessToken); // Update stored token
+
+      return newAccessToken;
     } catch (error) {
       console.error("Token refresh failed:", error);
       logout();
+      return null;
     }
   };
 
@@ -74,31 +92,22 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error) {
       console.error("Logout failed:", error);
     }
-    setAccessToken('');
+
+    // Clear auth state and localStorage
+    setAccessToken(null);
+    setRefreshToken(null);
+    setUser(null);
+    setIsAuthenticated(false);
+
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userData");
   };
 
-  // useLayoutEffect(() => {   / uselayout blocks rest of the rendering components and executes first 
-  //   const authInterceptor = api.interceptors.request.use((config) => {
-  //     config.headers.Authorization =
-  //       !contig._retry && token
-  //         ? `Bearer ${token}`
-  //         : config.headers.Authorization;
-  //     return config;
-  //   });
-  //   return () => {
-  //     api.interceptors.request.eject(authInterceptor);
-  //   };
-  // }, [token]);
-
-
-
-
-
-
-
-
   return (
-    <AuthContext.Provider value={{ accessToken,refreshAccessToken,isAuthenticated,userData, login, logout }}>
+    <AuthContext.Provider
+      value={{ accessToken, refreshAccessToken, isAuthenticated, userData, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -114,4 +123,3 @@ const useAuth = (): AuthContextType => {
 };
 
 export { AuthProvider, useAuth };
-

@@ -2,6 +2,8 @@ import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Checkout from '../order/CheckOut';
+import useAxiosInterceptor from '../../interceptors/AxiosInstance';
+
 
 // Define the interfaces based on your Mongoose model
 interface IPlatform {
@@ -54,6 +56,8 @@ interface IExtendedGame extends IGame {
 
 
 const ProductDetails = () => {
+    const axiosInstance = useAxiosInterceptor(); // Use Axios interceptor
+
     const { id } = useParams();
     const [product, setProduct] = useState<IExtendedGame>({
         _id: '',
@@ -63,25 +67,7 @@ const ProductDetails = () => {
         gameImagePath: '',
         gamePlatform: { _id: '', platformName: '' },
         category: { _id: '', categoryName: '' },
-        // UI-specific default data
-        specs: {
-            cudaCores: 8704,
-            boostClock: '1.71 GHz',
-            memorySize: '10 GB',
-            memoryType: 'GDDR6X'
-        },
-        benchmarks: [
-            { model: 'GeForce RTX 3090', score: 16591 },
-            { model: 'GeForce RTX 3080', score: 15667 },
-            { model: 'GeForce RTX 3070', score: 12736 },
-            { model: 'GeForce RTX 3080Ti', score: 19945 }
-        ],
-        comparison: {
-            model: 'GeForce 1070 Ti',
-            type: 'Your Display Card',
-            score: 7363,
-            percentage: 67
-        }
+
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -102,34 +88,17 @@ const ProductDetails = () => {
             try {
                 let response;
                 if (window.location.pathname.includes("/game/")) {
-                    response = await axios.get(`http://localhost:3000/api/game/${id}`);
+                    response = await axiosInstance.get(`http://localhost:3000/api/game/${id}`);
                     setType("game");
                 } else if (window.location.pathname.includes("/skin/")) {
-                    response = await axios.get(`http://localhost:3000/api/skins/${id}`);
+                    response = await axiosInstance.get(`http://localhost:3000/api/skins/${id}`);
                     setType("skin");
                 }
 
                 // Merge fetched game data with UI-specific data
                 setProduct({
                     ...response.data,
-                    specs: {
-                        cudaCores: 8704,
-                        boostClock: '1.71 GHz',
-                        memorySize: '10 GB',
-                        memoryType: 'GDDR6X'
-                    },
-                    benchmarks: [
-                        { model: 'GeForce RTX 3090', score: 16591 },
-                        { model: 'GeForce RTX 3080', score: 15667 },
-                        { model: 'GeForce RTX 3070', score: 12736 },
-                        { model: 'GeForce RTX 3080Ti', score: 19945 }
-                    ],
-                    comparison: {
-                        model: 'GeForce 1070 Ti',
-                        type: 'Your Display Card',
-                        score: 7363,
-                        percentage: 67
-                    }
+             
                 });
 
 
@@ -156,12 +125,12 @@ const ProductDetails = () => {
             // In a real app, you would fetch from your API
             let response;
             if (window.location.pathname.includes("/game/")) {
-                response = await axios.get(`http://localhost:3000/api/game/`);
+                response = await axiosInstance.get(`http://localhost:3000/api/game/`);
                 setType("game");
                 setRelatedProducts(response.data.games);
 
             } else if (window.location.pathname.includes("/skin/")) {
-                response = await axios.get(`http://localhost:3000/api/skins/`);
+                response = await axiosInstance.get(`http://localhost:3000/api/skins/`);
                 setType("skin");
                 setRelatedProducts(response.data);
 

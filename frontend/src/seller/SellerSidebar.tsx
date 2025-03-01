@@ -1,5 +1,6 @@
 // src/components/Sidebar.tsx
 
+import { Plus } from '@phosphor-icons/react';
 import { BarChart3, DollarSign, Gift, Menu, MessageSquare, Package, PieChart, Settings, Tag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,13 +28,13 @@ const SellerSidebar = ({ activePage, setActivePage }) => {
                 <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
                     <Menu className="text-cyan-400" size={20} />
                 </div>
-                <span className="text-cyan-400 font-bold text-lg">GameMarket</span>
+                <span className="text-cyan-400 font-bold text-lg">LOOTVAULT</span>
             </div>
 
             <div className="space-y-2">
                 <SidebarItem
                     icon={Package}
-                    text="Campaigns"
+                    text="All Products"
                     active={activePage === 'Campaigns'}
                     onClick={() => {
                         setActivePage('Campaigns')
@@ -41,8 +42,8 @@ const SellerSidebar = ({ activePage, setActivePage }) => {
                     }}
                 />
                 <SidebarItem
-                    icon={BarChart3}
-                    text="Analytics"
+                    icon={Plus}
+                    text="Add Game"
                     active={activePage === 'Analytics'}
                     onClick={() => {
                         navigate('/add-game')
@@ -51,7 +52,7 @@ const SellerSidebar = ({ activePage, setActivePage }) => {
                 />
                 <SidebarItem
                     icon={PieChart}
-                    text="Overview"
+                    text="Add Skin"
                     active={activePage === 'Overview'}
                     onClick={() => {
                         setActivePage('Overview')
@@ -60,35 +61,8 @@ const SellerSidebar = ({ activePage, setActivePage }) => {
                     }}
                 />
                 <SidebarItem
-                    icon={MessageSquare}
-                    text="Messages"
-                    active={activePage === 'Messages'}
-                    onClick={() => {
-                        setActivePage('Messages')
-                    }
-                    }
-                />
-                <SidebarItem
-                    icon={Gift}
-                    text="Promotions"
-                    active={activePage === 'Promotions'}
-                    onClick={() => setActivePage('Promotions')}
-                />
-                <SidebarItem
-                    icon={DollarSign}
-                    text="Payouts"
-                    active={activePage === 'Payouts'}
-                    onClick={() => setActivePage('Payouts')}
-                />
-                <SidebarItem
-                    icon={Tag}
-                    text="Pricing"
-                    active={activePage === 'Pricing'}
-                    onClick={() => setActivePage('Pricing')}
-                />
-                <SidebarItem
                     icon={Settings}
-                    text="Settings"
+                    text="Logout"
                     active={activePage === 'Settings'}
                     onClick={() => setActivePage('Settings')}
                 />

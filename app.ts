@@ -53,6 +53,7 @@ app.use("/api/game", GameRouter);
 app.use("/api/skins", skinRouter);
 app.use("/api/giftcard", GiftCardRouter);
 
+
 //routes for categories 
 app.use("/api/category/game",gameCategoryRouter);
 

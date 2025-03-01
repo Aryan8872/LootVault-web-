@@ -167,5 +167,61 @@ router.put("/:id", (req: Request, res: Response) => {
       res.status(500).json({ message: 'Internal Server Error' });
     }
   });
+
+  router.post("/apply-for-seller", authenticateToken, async (req: Request, res: Response) => {
+    try {
+        // Explicitly cast req as AuthRequest
+        const authReq = req as AuthRequest;
+        const userEmail = authReq.user?.id; // Get email from the JWT token
+
+        if (!userEmail) {
+            return res.status(401).json({ message: "Unauthorized: No user found" });
+        }
+
+        // Find the user by email and update their role
+        const updatedUser = await userModel.findOneAndUpdate(
+            { email: userEmail }, // Search by email instead of _id
+            { role: "seller" },    // Change role to seller
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ message: "Role updated to seller", user: updatedUser });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error updating role" });
+    }
+});
+
+
+  router.post("/refresh", (req:Request, res:Response) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+        return res.status(401).json({ message: "Refresh token required" });
+    }
+    console.log(refreshToken)
+
+    try {
+        const payload = jwt.verifyRefreshToken(refreshToken); 
+        console.log("Payload Object:", JSON.stringify(payload));
+        const newAccessToken = jwt.generateRefreshToken(
+            { id: payload.id },
+            secretRefreshKey,
+            { expiresIn: "15m" }
+        );    
+        console.log("New Access Token Generated:", newAccessToken);
+
+        res.status(200).json({ accessToken: newAccessToken });
+    } catch (error) {
+        return res.status(403).json({ message: "Invalid or expired refresh token" });
+    }
+    
+});
+
+
   
 export default router;

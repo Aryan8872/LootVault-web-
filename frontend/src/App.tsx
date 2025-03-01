@@ -1,4 +1,4 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { Route,Navigate, BrowserRouter as Router, Routes } from "react-router-dom";
 import Login from "./components/auth/login/Login";
 import SocialFeed from "./components/forum/Forum2";
 import ForumHomepage from "./components/forum/ForumHome";
@@ -7,7 +7,7 @@ import HomePage from "./components/home/HomePage";
 import { SearchResults } from "./components/home/search/SearchResults";
 import AddProduct from './components/product/AddProduct';
 import RootLayout from "./components/root/RootLayout";
-import { AuthProvider } from "./contexts/AuthContext/AuthContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext/AuthContext";
 import SellerHome from "./seller/ProductRow";
 import SellerDashboard from "./seller/SellerDashboard";
 import AddSkin from "./components/product/AddSkin";
@@ -37,12 +37,14 @@ const AuthWrapper = () => {
   //   }
   // }, [isAuthenticated]); 
 
+  const { isAuthenticated } = useAuth();
 
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register/>}/>
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
+        <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
+
         <Route element={<RootLayout />}>
           <Route index element={<HomePage />} />
           <Route path="/post/:id" element={<PostDetail />} />
@@ -50,7 +52,8 @@ const AuthWrapper = () => {
           <Route path="/forum" element={<ForumHomepage />} />
           <Route path="/forum2" element={<SocialFeed />} />
           <Route path="/game/:id" element={<ProductDetails/>}/>
-          <Route path="/skin/:id" element={<ProductDetails/>}/> 
+          <Route path="/skin/:id" element={<ProductDetails/>}/>
+          <Route path ="/post/:id" element={<PostDetail/>}/>
           <Route path = "/user-profile" element={<UserProfileEdit/>}/>
         </Route>
         <Route element={<SellerDashboard />}>

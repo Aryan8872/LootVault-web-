@@ -125,7 +125,7 @@ const AddSkin = () => {
                 <div className="text-white">
                     Add skin
                 </div>
-                <form onSubmit={handleSubmit} className="grid grid-cols-[repeat(2,550px)] grid-rows-2 px-40 justify-center gap-x-4 gap-y-2 items-center" >
+                <form onSubmit={handleSubmit} className="grid grid-cols-[repeat(2,550px)] grid-rows-2 px-40 justify-center gap-x-4 gap-y-2 items-center">
                     <div className="flex flex-col px-7 gap-5 bg-white max-w-[37rem] rounded-lg shadow-md h-max pb-6">
                         <span className="mt-5">General Information</span>
 
@@ -136,7 +136,7 @@ const AddSkin = () => {
                                     {/* <Description className="text-sm/6 text-black/50">Use your real name so people will recognize you.</Description> */}
                                     <Input
                                         className={clsx(
-                                            'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-white',
+                                            'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-black',
                                             'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 '
                                         )}
                                         onChange={(e) => setSkinName(e.target.value)}
@@ -170,7 +170,7 @@ const AddSkin = () => {
                     <div className="flex flex-col px-7  bg-white rounded-lg shadow-md">
                         <span className="mt-5">Product Media</span>
                         <div className=" flex items-center justify-center p-6 w-full">
-                        <FileUploader onFileSelect={(file) => setImage(file)} />
+                            <FileUploader onFileSelect={(file) => setImage(file)} />
                         </div>
 
                     </div>
@@ -185,7 +185,7 @@ const AddSkin = () => {
                                     {/* <Description className="text-sm/6 text-black/50">Use your real name so people will recognize you.</Description> */}
                                     <Input
                                         className={clsx(
-                                            'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-white',
+                                            'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-black',
                                             'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
                                         )}
                                         onChange={(e) => setSkinPrice(e.target.value)}
@@ -196,22 +196,7 @@ const AddSkin = () => {
                                 </Field>
                             </div>
 
-                            <div className="w-full max-w-md ">
-                                <Field>
-                                    <Label className="text-sm/6 font-medium text-black">Discount Percentage</Label>
-                                    {/* <Description className="text-sm/6 text-black/50">Use your real name so people will recognize you.</Description> */}
-                                    <Input
-                                        className={clsx(
-                                            'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-white',
-                                            'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
-                                        )}
-                                        onChange={(e) => setSkinPrice(e.target.value)}
-                                        value={skinPrice}
-
-
-                                    />
-                                </Field>
-                            </div>
+               
 
                         </div>
 
@@ -305,7 +290,17 @@ const AddSkin = () => {
                         </div>
 
                     </div>
-                    <button type="submit">Add</button>
+                    <button
+                        type="submit"
+                        className={clsx(
+
+                            'mt-6 w-full max-w-md py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md',
+                            'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                            'transition duration-150 ease-in-out justify-self-center col-span-2 self-center'
+                        )}
+                    >
+                        Add Skin
+                    </button>
 
 
                 </form>

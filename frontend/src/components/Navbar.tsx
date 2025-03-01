@@ -1,4 +1,4 @@
-import { List, Plus } from "@phosphor-icons/react";
+import { List } from "@phosphor-icons/react";
 import * as React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Correct import for hook
@@ -7,7 +7,7 @@ import { SearchBar } from "./home/search/SearchBar";
 
 export const NavBar: React.FC = () => {
     const navigate = useNavigate();  // Initialize useNavigate hook
-    const { user } = useAuth(); // Consume the email from context
+    const { user, isAuthenticated } = useAuth(); // Consume the email from context
 
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -30,7 +30,7 @@ export const NavBar: React.FC = () => {
                             className="text-xl md:text-2xl font-medium font-patternbold text-logo-blue cursor-pointer">
                             LOOTVAULT
                         </div>
-                 
+
                     </div>
 
                     {/* Center Section - Search Bar */}
@@ -40,32 +40,32 @@ export const NavBar: React.FC = () => {
 
                     {/* Right Section */}
                     <div className="flex justify-between flex-row items-center gap-2 lg:gap-4">
+
+
+                        {user?.role == "seller" && (<span onClick={() => navigate("/user-profile")}>seller</span>
+                        )}
                         <button
-                            onClick={() => navigate("/add-game")} // Navigate on click
-                            className="hidden md:block btn btn-neutral btn-secondary w-24 lg:flex flex-row w-[8.3rem] bg-inherit shadow-md text-logo-blue border-logo-blue">
-                            <Plus size={26}
-                            />
-                            Add Item
-                        </button>
-
-                        {/* Mobile Add Button */}
-                        <button className="md:hidden btn btn-sm btn-neutral btn-secondary  text-white border-inherit"
-                        >
-                            Add
-                        </button>
-                        
-                        <span onClick={()=>navigate("/forum")}>Forum</span>
-                        <span onClick={()=>navigate("/user-profile")}>seller</span>
-
+                            onClick={() => navigate("/forum")}
+                            className="btn btn-outline btn-neutral w-24 lg:w-28 border-logo-blue shadow-md text-logo-blue">Forum</button>
 
 
                         {/* Auth Buttons - Hidden on mobile */}
                         <div className="hidden md:flex  w-auto lg:gap-4">
-                            <button
-                                onClick={() => navigate("/login")} // Navigate on click
-
-                                className="btn btn-outline btn-neutral w-24 lg:w-28 border-white bg-main_blue text-white">Sign In</button>
-                            <button className="btn btn-outline btn-neutral w-24 lg:w-28 border-logo-blue shadow-md text-logo-blue">Sign Up</button>
+                            {!isAuthenticated && (
+                                <>
+                                    <button
+                                        onClick={() => navigate("/login")}
+                                        className="btn btn-outline btn-neutral w-24 lg:w-28 border-white bg-main_blue text-white"
+                                    >
+                                        Sign In
+                                    </button>
+                                    <button
+                                        className="btn btn-outline btn-neutral w-24 lg:w-28 border-logo-blue shadow-md text-logo-blue"
+                                    >
+                                        Sign Up
+                                    </button>
+                                </>
+                            )}
                         </div>
 
 

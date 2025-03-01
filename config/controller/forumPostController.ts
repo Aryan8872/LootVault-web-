@@ -346,6 +346,25 @@ const deletePost = async (req: ForumRequest, res: Response) => {
     }
 };
 
+const getPostDetails = async (req: Request, res: Response) => {
+    try {
+      const { postId } = req.params;
+  
+      const post = await PostModel.findById(postId)
+        .populate('user', 'username')
+        .populate('comments.user', 'username');
+  
+      if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+  
+      res.status(200).json(post);
+    } catch (error) {
+      console.error('Error fetching post details:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+
 // Edit a post
 const editPost = async (req: ForumRequest, res: Response) => {
     try {
@@ -377,6 +396,7 @@ module.exports = {
     dislikePost,
     addComment,
     editComment,
+    getPostDetails,
     deleteComment,
     deletePost,
     editPost,

@@ -1,6 +1,7 @@
 import { Heart, MessageCircle, MoreHorizontal, Pencil, Share2, Trash } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
 
 
 const PostCard = ({ post, auth, onLike, onDislike, onComment, onDelete, onEdit }: Props) => {
+  const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
@@ -52,7 +54,9 @@ const PostCard = ({ post, auth, onLike, onDislike, onComment, onDelete, onEdit }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 relative">
+    <div className="bg-white rounded-lg shadow p-4 relative"
+    onClick={()=>navigate(`/post/${post._id}`)}
+    >
       {/* User Info */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">

@@ -8,6 +8,7 @@ const {
     addComment,
     editComment,
     deleteComment,
+    getPostDetails,
     deletePost,
     editPost,
     addReply,
@@ -28,6 +29,8 @@ router.get('/posts/comments/get/:id', getComments);
 router.put('/posts/:id/comments/:commentId', editComment);
 router.delete('/posts/:id/comments/:commentId', deleteComment);
 router.post('/posts/:postId/comments/:commentId/reply', addReply);
+router.get('/posts/:postId', getPostDetails);
+
 
 router.delete('/posts/:id', deletePost);
 router.put('/posts/:id', editPost);

@@ -122,7 +122,7 @@ const AddProduct = () => {
         <>
 
             <div className="">
-            <div className="text-white">
+                <div className="text-white">
                     Add game
                 </div>
                 <form onSubmit={handleSubmit} className="grid grid-cols-[repeat(2,550px)] grid-rows-2 px-40 justify-center gap-x-4 gap-y-2 items-center" >
@@ -133,10 +133,9 @@ const AddProduct = () => {
                             <div className="w-full max-w-md">
                                 <Field>
                                     <Label className="text-sm/6 font-medium text-black">Name</Label>
-                                    {/* <Description className="text-sm/6 text-black/50">Use your real name so people will recognize you.</Description> */}
                                     <Input
                                         className={clsx(
-                                            'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-white',
+                                            'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-black',
                                             'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 '
                                         )}
                                         onChange={(e) => setProductName(e.target.value)}
@@ -170,7 +169,7 @@ const AddProduct = () => {
                     <div className="flex flex-col px-7  bg-white rounded-lg shadow-md">
                         <span className="mt-5">Product Media</span>
                         <div className=" flex items-center justify-center p-6 w-full">
-                        <FileUploader onFileSelect={(file) => setImage(file)} />
+                            <FileUploader onFileSelect={(file) => setImage(file)} />
                         </div>
 
                     </div>
@@ -185,7 +184,7 @@ const AddProduct = () => {
                                     {/* <Description className="text-sm/6 text-black/50">Use your real name so people will recognize you.</Description> */}
                                     <Input
                                         className={clsx(
-                                            'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-white',
+                                            'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-black',
                                             'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
                                         )}
                                         onChange={(e) => setProductPrice(e.target.value)}
@@ -196,22 +195,7 @@ const AddProduct = () => {
                                 </Field>
                             </div>
 
-                            <div className="w-full max-w-md ">
-                                <Field>
-                                    <Label className="text-sm/6 font-medium text-black">Discount Percentage</Label>
-                                    {/* <Description className="text-sm/6 text-black/50">Use your real name so people will recognize you.</Description> */}
-                                    <Input
-                                        className={clsx(
-                                            'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-white',
-                                            'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
-                                        )}
-                                        onChange={(e) => setProductPrice(e.target.value)}
-                                        value={gamePrice}
 
-
-                                    />
-                                </Field>
-                            </div>
 
                         </div>
 
@@ -241,7 +225,7 @@ const AddProduct = () => {
                                         anchor="bottom"
                                         transition
                                         className={clsx(
-                                            'w-[var(--input-width)] rounded-xl border border-white/5 bg-black/5 p-1 [--anchor-gap:var(--spacing-1)] empty:invisible',
+                                            'w-[var(--input-width)]  rounded-xl border border-white/5 p-1 [--anchor-gap:var(--spacing-1)] empty:invisible',
                                             'transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0'
                                         )}
                                     >
@@ -249,10 +233,10 @@ const AddProduct = () => {
                                             <ComboboxOption
                                                 key={platform._id}
                                                 value={platform}
-                                                className="group flex cursor-default items-center gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-white/10"
+                                                className="group flex cursor-default items-center bg-black gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-blue-800"
                                             >
-                                                <CheckIcon className="invisible size-4 fill-white group-data-[selected]:visible" />
-                                                <div className="text-sm/6 text-black">{platform.platformName}</div>
+                                                <CheckIcon className="invisible size-4 bg-white group-data-[selected]:visible" />
+                                                <div className="text-sm/6 text-white">{platform.platformName}</div>
                                             </ComboboxOption>
                                         ))}
                                     </ComboboxOptions>
@@ -291,10 +275,10 @@ const AddProduct = () => {
                                             <ComboboxOption
                                                 key={category._id}
                                                 value={category}
-                                                className="group flex cursor-default items-center gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-white/10"
+                                                className="group flex cursor-default bg-black items-center gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-blue-800"
                                             >
                                                 <CheckIcon className="invisible size-4 fill-white group-data-[selected]:visible" />
-                                                <div className="text-sm/6 text-black">{category.categoryName}</div>
+                                                <div className="text-sm/6 text-white">{category.categoryName}</div>
                                             </ComboboxOption>
                                         ))}
                                     </ComboboxOptions>
@@ -305,7 +289,17 @@ const AddProduct = () => {
                         </div>
 
                     </div>
-                    <button type="submit">Add</button>
+                    <button
+                        type="submit"
+                        className={clsx(
+
+                            'mt-6 w-full max-w-md py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md',
+                            'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                            'transition duration-150 ease-in-out justify-self-center col-span-2 self-center'
+                        )}
+                    >
+                        Add Game
+                    </button>
 
 
                 </form>

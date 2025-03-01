@@ -11,19 +11,6 @@ const SellerHome = () => {
     const [games, setGames] = useState([]);
     const [editingProduct, setEditingProduct] = useState(null); // State for editing product
 
-    // const handleEdit = () => {
-    //     onEdit(product._id, product);
-    // };
-
-    // const handleEditProduct = async (productId, productData) => {
-    //     try {
-    //       const updatedProduct = await editProduct(productId, productData);
-    //       setProducts(products.map(product => product._id === productId ? updatedProduct : product));
-    //       setEditingProduct(null);
-    //     } catch (error) {
-    //       console.error('Error updating product:', error);
-    //     }
-    //   };
 
     const getAllGames = async () => {
         try {
@@ -42,51 +29,60 @@ const SellerHome = () => {
     useEffect(() => { getAllGames() }, [])
 
     return (
-        <div>
-            {games.map((game) => <ProductRow
-                key={game._id}
-                games={game}
-                isExpanded={isExpanded}
-                setIsExpanded={setIsExpanded}
-                product={[]}
-                setEditingProduct={setEditingProduct} // Pass function to open edit form
+        <>
+            <div>
+                <div className='text-white justify-self-center font-nunitobold text-2xl mb-4'>
+                    Welcome Back!
+                </div>
+                {games.map((game) => <ProductRow
+                    key={game._id}
+                    games={game}
+                    isExpanded={isExpanded}
+                    setIsExpanded={setIsExpanded}
+                    product={[]}
+                    setGames={setGames}
+                    setEditingProduct={setEditingProduct} // Pass function to open edit form
 
-            />)}
+                />)}
 
 
-            {editingProduct && (
-                console.log(editingProduct),
-                <EditForm
-                    game={editingProduct}
-                    onUpdate={() => setEditingProduct(null)} // Close form
-                />
-            )}
-        </div>
+                {editingProduct && (
+                    console.log(editingProduct),
+                    <EditForm
+                        game={editingProduct}
+                        setGames={setGames}
+                        onUpdate={() => setEditingProduct(null)} // Close form
+                    />
+                )}
+            </div>
+        </>
 
 
     );
 }
 
-
-const ProductRow = ({ product, setIsExpanded, isExpanded, games, setEditingProduct }) => {
-
+const ProductRow = ({ product, setIsExpanded, isExpanded, games,setGames, setEditingProduct }) => {
 
     const handleDelete = async () => {
         try {
-            await deleteProduct(games._id).then((response) => {
-                toast.success('Product deleted successfully!');
-
-            });
+            await deleteProduct(games._id)
+            toast.success('Product deleted successfully!');
+            setGames((prevGames) => prevGames.filter((game) => game._id !== games._id)); // Remove deleted game from the state
         } catch (error) {
             console.error('Error deleting product:', error);
         }
     };
+
+    const handleExpansion = () => {
+        setIsExpanded((prevExpanded) => prevExpanded === games._id ? null : games._id);  // Toggle logic
+    };
+
     return (
         <div className="bg-gray-900/50 backdrop-blur-xl border border-cyan-500/20 rounded-lg p-4 mb-3 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/20">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center shrink-0">
-                        <img src={product.icon} alt={games?.gameName} className="w-8 h-8" />
+                        <img src={`http://localhost:3000/public/uploads/${games.gameImagePath || games.skinImagePath}`} alt={games?.gameName} className="w-8 h-8" />
                     </div>
                     <div>
                         <h3 className="font-medium text-gray-100">{games?.gameName}</h3>
@@ -108,7 +104,6 @@ const ProductRow = ({ product, setIsExpanded, isExpanded, games, setEditingProdu
                         <button className="p-2 text-gray-400 hover:text-cyan-400 transition-colors"
                             onClick={() => setEditingProduct(games)} // Open edit form
                         >
-
                             <Edit2 size={18} />
                         </button>
                         <button className="p-2 text-gray-400 hover:text-red-400 transition-colors" onClick={handleDelete}>
@@ -116,15 +111,15 @@ const ProductRow = ({ product, setIsExpanded, isExpanded, games, setEditingProdu
                         </button>
                         <button
                             className="p-2 text-gray-400 hover:text-cyan-400 transition-colors"
-                            onClick={() => setIsExpanded(!isExpanded)}
+                            onClick={handleExpansion}  // Call handleExpansion to toggle
                         >
-                            {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                            {isExpanded === games._id ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                         </button>
                     </div>
                 </div>
             </div>
 
-            {isExpanded && (
+            {isExpanded === games._id && (  // Only show details if the current game is expanded
                 <div className="mt-4 pt-4 border-t border-gray-800">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div className="space-y-1">
@@ -133,11 +128,11 @@ const ProductRow = ({ product, setIsExpanded, isExpanded, games, setEditingProdu
                         </div>
                         <div className="space-y-1">
                             <div className="text-sm text-gray-400">Description</div>
-                            <div className="font-medium text-cyan-400">${games?.gameDescription}</div>
+                            <div className="font-medium text-cyan-400">{games?.gameDescription}</div>
                         </div>
                         <div className="space-y-1">
                             <div className="text-sm text-gray-400">Rating</div>
-                            <div className="font-medium text-cyan-400">⭐ {product?.rating}/5</div>
+                            <div className="font-medium text-cyan-400">⭐ {games?.rating}/5</div>
                         </div>
                     </div>
                 </div>
@@ -149,7 +144,8 @@ const ProductRow = ({ product, setIsExpanded, isExpanded, games, setEditingProdu
 
 
 
-const EditForm = ({ game, onUpdate }) => {
+
+const EditForm = ({ game, onUpdate,setGames }) => {
     const [skinName, setSkinName] = useState(game.gameName || "");
     const [skinPrice, setSkinPrice] = useState(game.gamePrice || "");
     const [skinDescription, setSkinDescription] = useState(game.gameDescription || "");
@@ -188,6 +184,8 @@ const EditForm = ({ game, onUpdate }) => {
                 )
             );
         }
+        console.log(gamePlatform)
+
     }, [platformQuery, gamePlatform]);
 
     async function getAllGameCategory() {
@@ -209,6 +207,10 @@ const EditForm = ({ game, onUpdate }) => {
     }
 
     const handleSubmit = async (e) => {
+        if (!selectedGamePlatform?._id) {
+            alert("Please select a valid platform.");
+            return; // Stop the form submission if no platform is selected
+        }
         e.preventDefault();
         const formData = new FormData();
         formData.append("gameName", skinName);
@@ -219,10 +221,15 @@ const EditForm = ({ game, onUpdate }) => {
         formData.append("category", selectedGameCategory?._id);
 
         try {
-            await axios.patch(`http://localhost:3000/api/game/${game._id}`, formData, {
+            const response = await axios.patch(`http://localhost:3000/api/game/${game._id}`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
+            const updatedGame = response.data
+            setGames((prevGames) =>
+                prevGames.map((g) => (g._id === game._id ? updatedGame : g))
+            );
             alert("Product updated successfully!");
+
             onUpdate();
         } catch (error) {
             console.error("Error updating game:", error);
