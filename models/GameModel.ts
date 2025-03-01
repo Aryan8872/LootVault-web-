@@ -38,7 +38,8 @@ const gameSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Platform',
         required: true
-    }
+    },
+    
 });
 
 const gameModel:mongoose.Model<IGame> = mongoose.model<IGame>('Game', gameSchema);

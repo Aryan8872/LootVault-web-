@@ -9,10 +9,10 @@ export default {
       fontFamily: {
         patternbold: ['"Pattern Blank Bold"'],
         patternregular: ['"Pattern Blank Regular"'],
-        nunitoregular:['"Nunito Regular"'],
-        nunitobold:['"Nunito Bold"'],
-        nunitosemibold:['"Nunito SemiBold"'],
-        nunitolight:['"Nunito Light"'],
+        nunitoregular: ['"Nunito Regular"'],
+        nunitobold: ['"Nunito Bold"'],
+        nunitosemibold: ['"Nunito SemiBold"'],
+        nunitolight: ['"Nunito Light"'],
         textShadow: {
           DEFAULT: '0 -1px 0 rgba(0, 0, 0, 0.4)',
         },
@@ -20,14 +20,23 @@ export default {
 
 
       },
-      colors:{
-        "logo-blue":"#59a2fd",
-        "black_hover":"#1F2937",
-        "main_bg_color":"#F0F7FF",
-        "main_blue":"#006BFF"
+      animation: {
+        fadeIn: 'fadeIn 0.3s ease-in-out',
       },
-      backgroundColor:theme=>({
-        'default':theme('')
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: 0, transform: 'translateY(10px)' },
+          '100%': { opacity: 1, transform: 'translateY(0)' },
+        },
+      },
+      colors: {
+        "logo-blue": "#59a2fd",
+        "black_hover": "#1F2937",
+        "main_bg_color": "#F0F7FF",
+        "main_blue": "#006BFF"
+      },
+      backgroundColor: theme => ({
+        'default': theme('')
       })
     },
   },
@@ -48,4 +57,3 @@ export default {
     themeRoot: ":root", // The element that receives theme color CSS variables
   },
 }
-

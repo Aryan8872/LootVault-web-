@@ -31,6 +31,7 @@ app.use("/api/userData",authenticateToken,customerRoute );
 // Routes for auth
 app.use("/api/auth",authRoute );
 
+
 // Serve static files (e.g., images)
 app.use("/public/uploads", express.static(path.join(__dirname, "public", "uploads")));
 
@@ -48,7 +49,7 @@ app.get('/api/images/:imageName', (req:Request, res:Response) => {
 });
 app.use("/api/user",authRoute)
 // Secure routes for products
-app.use("/api/game",authenticateToken, GameRouter);
+app.use("/api/game", GameRouter);
 app.use("/api/skins", skinRouter);
 app.use("/api/giftcard", GiftCardRouter);
 

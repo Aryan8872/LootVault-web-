@@ -1,15 +1,15 @@
-import axios from 'axios';
-import React, { Suspense, useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Diamond, Gamepad2 } from 'lucide-react';
 import { Cards, Coin } from '@phosphor-icons/react';
+import axios from 'axios';
+import { Diamond, Gamepad2 } from 'lucide-react';
+import React, { Suspense, useEffect, useState } from 'react';
 import ShiftProductPage from './attract';
 import NewAndUpcomingReleases from './new';
-import New2 from './new2';
+import DlcExplorer from './DlcExplorer';
 import NewGames from './NewGames';
-const LazyTrendingOffer = React.lazy(()=>import('./TrendingOffers'))
-const LazyFeaturedProduct = React.lazy(()=>import('./FeaturedProduct'))
-const LazyFeaturedCategory = React.lazy(()=>import('./FeaturedCategory'))
-const LazyHeroBar = React.lazy(()=>import('./HeroBar'))
+const LazyTrendingOffer = React.lazy(() => import('./TrendingOffers'))
+const LazyFeaturedProduct = React.lazy(() => import('./FeaturedProduct'))
+const LazyFeaturedCategory = React.lazy(() => import('./FeaturedCategory'))
+const LazyHeroBar = React.lazy(() => import('./HeroBar'))
 const LazyBestSelling = React.lazy(() => import('./BestSelling'));
 const products = [
   {
@@ -122,20 +122,20 @@ const HomePage = () => {
 
     <Suspense fallback={<div>Loading...</div>}>
 
-    <LazyHeroBar/>
-    <LazyFeaturedCategory/>
-    <LazyFeaturedProduct/>
-    <LazyTrendingOffer/>
-    <LazyBestSelling />
-    {/* <LazyGames/> */}
-    <NewAndUpcomingReleases/>
-    <NewGames/>
-    <New2/>
-    <ShiftProductPage/>
-   </Suspense>
+      <LazyHeroBar />
+      <LazyFeaturedCategory />
+      <LazyFeaturedProduct />
+      <LazyTrendingOffer />
+      <LazyBestSelling />
+      {/* <LazyGames/> */}
+      <NewAndUpcomingReleases />
+      <NewGames />
+      <DlcExplorer />
+      <ShiftProductPage />
+    </Suspense>
 
 
-   
+
   )
 }
 

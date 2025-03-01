@@ -1,5 +1,5 @@
 // Make a function (logic)
-const userModels = require("../models/userModels");
+const userModels = require("../../models/UserModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const path = require("path");

@@ -117,11 +117,12 @@ export const SearchResults: React.FC = () => {
                     platform: selectedPlatform.join(","),
                     sortBy,
                     order,
+                    type:"both"
                 },
             });
             setGames(response.data.games.map((game: any) => ({
                 ...game,
-                gamePrice: parseFloat(game.gamePrice),
+                gamePrice: parseFloat(game.gamePrice || game.skinPrice),
             })));
         } catch (err) {
             setError("Failed to fetch search results.");

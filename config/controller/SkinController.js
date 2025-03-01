@@ -1,37 +1,55 @@
 const skinModel = require("../../models/SkinModel")
-const { upload } = require("./ProductController")
+const upload = require("../../middlewares/uploads");
 
-const addSkin = async (req,res) => {
-    upload.single(req,res,async(err)=>{
-  
-      if(err){
-        return res.status(400).json({message:err})
+
+const addSkin = async (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+
+    try {
+      const { skinName, skinPrice, skinDescription,skinImagePath, category,skinPlatform } = req.body;
+
+      // Validate required fields
+      if (!skinName || !skinPrice || !skinDescription) {
+        return res.status(400).json({ message: "Missing required fields" });
       }
-  
-      try{
-        const updatedCardData = {...req.body}
-  
-        if(req.file){
-          updatedCardData.imagePath = `/uploads/${req.file.filename}`
-        }
-  
-        const updatedCard = skinModel.findByIdAndUpdate(req.params.id,updatedCardData,{new:true})
-  
-        if (!updatedCard) {
-          return res.status(404).json({ message: 'Product not found' });
-        }
-  
-      }catch(e){
-        console.log(e)
+
+      const newSkinData = {
+        skinName,
+        skinPrice: parseFloat(skinPrice),
+        skinDescription,
+        skinPlatform,
+        category,
+      };
+
+      // If an image is uploaded, set the image path
+      if (req.file) {
+        newSkinData.skinImagePath = req.file.filename;
+      }else if (skinImagePath) {
+        // Flutter: Image is sent as filename
+        newSkinData.skinImagePath = skinImagePath;
       }
-  
-    })
-  
-  }
+
+      // Create and save the new skin
+      const newSkin = new skinModel(newSkinData);
+      const savedSkin = await newSkin.save();
+
+      res.status(201).json(savedSkin);
+    } catch (error) {
+      console.error("Error creating skin:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  });
+};
+
+
+
   
   const findSkinsById = async (req,res) => {
     try{
-      const cardData = await skinModel.findById(req.params.id);
+      const cardData = await skinModel.findById(req.params.id).populate('skinPlatform', 'platformName').populate('category', 'categoryName');
   
       if(!cardData){
         return res.status(404).json({message:`Card not found with id: ${req.params.id} `})

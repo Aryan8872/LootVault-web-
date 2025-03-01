@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 import FileUploader from "./FileUploader";
 
 
-const AddProduct = () => {
-    const [gameName, setProductName] = useState("");
-    const [gamePrice, setProductPrice] = useState("");
-    const [gameDescription, setProductDescription] = useState("");
+const AddSkin = () => {
+    const [skinName, setSkinName] = useState("");
+    const [skinPrice, setSkinPrice] = useState("");
+    const [skinDescription, setSkinDescription] = useState("");
     const [image, setImage] = useState(null);
 
     const [gamePlatform, setGamePlatform] = useState([]);
@@ -82,17 +82,17 @@ const AddProduct = () => {
         e.preventDefault();
 
         const formData = new FormData();
-        formData.append("gameName", gameName);
-        formData.append("gamePrice", gamePrice);
-        formData.append("gameDescription", gameDescription);
+        formData.append("skinName", skinName);
+        formData.append("skinPrice", skinPrice);
+        formData.append("skinDescription", skinDescription);
         formData.append("image", image);
-        formData.append("gamePlatform", selectedGamePlatform._id);
+        formData.append("skinPlatform", selectedGamePlatform._id);
         formData.append("category", selectedGameCategory._id);
 
-        console.log(`name: ${gameName},price: ${gamePrice},description :${gameDescription},image: ${image}, category :${selectedGameCategory._id}`);
+        console.log(`name: ${skinName},price: ${skinPrice},description :${skinDescription},image: ${image}, category :${selectedGameCategory._id}`);
 
         try {
-            await axios.post("http://localhost:3000/api/game/add", formData, {
+            await axios.post("http://localhost:3000/api/skins/add", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -122,8 +122,8 @@ const AddProduct = () => {
         <>
 
             <div className="">
-            <div className="text-white">
-                    Add game
+                <div className="text-white">
+                    Add skin
                 </div>
                 <form onSubmit={handleSubmit} className="grid grid-cols-[repeat(2,550px)] grid-rows-2 px-40 justify-center gap-x-4 gap-y-2 items-center" >
                     <div className="flex flex-col px-7 gap-5 bg-white max-w-[37rem] rounded-lg shadow-md h-max pb-6">
@@ -139,8 +139,8 @@ const AddProduct = () => {
                                             'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-white',
                                             'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 '
                                         )}
-                                        onChange={(e) => setProductName(e.target.value)}
-                                        value={gameName}
+                                        onChange={(e) => setSkinName(e.target.value)}
+                                        value={skinName}
 
                                     />
                                 </Field>
@@ -157,8 +157,8 @@ const AddProduct = () => {
                                             'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 !h-[6rem] '
                                         )}
                                         rows={3}
-                                        value={gameDescription}
-                                        onChange={(e) => setProductDescription(e.target.value)}
+                                        value={skinDescription}
+                                        onChange={(e) => setSkinDescription(e.target.value)}
 
                                     />
                                 </Field>
@@ -188,8 +188,8 @@ const AddProduct = () => {
                                             'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-white',
                                             'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
                                         )}
-                                        onChange={(e) => setProductPrice(e.target.value)}
-                                        value={gamePrice}
+                                        onChange={(e) => setSkinPrice(e.target.value)}
+                                        value={skinPrice}
 
 
                                     />
@@ -205,8 +205,8 @@ const AddProduct = () => {
                                             'mt-3 block w-full rounded-lg border-none bg-black/5 py-1.5 px-3 text-sm/6 text-white',
                                             'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
                                         )}
-                                        onChange={(e) => setProductPrice(e.target.value)}
-                                        value={gamePrice}
+                                        onChange={(e) => setSkinPrice(e.target.value)}
+                                        value={skinPrice}
 
 
                                     />
@@ -315,4 +315,4 @@ const AddProduct = () => {
     );
 };
 
-export default AddProduct;
+export default AddSkin;

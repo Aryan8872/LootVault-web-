@@ -6,7 +6,7 @@ interface IUser extends Document {
     username: string;
     phoneNo: string;
     password: string;
-    image?: string;
+    image?: string; 
     role: "buyer" | "seller" | "admin";
     posts: mongoose.Types.ObjectId[];
     comments: mongoose.Types.ObjectId[];

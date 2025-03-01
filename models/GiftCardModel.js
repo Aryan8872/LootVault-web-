@@ -22,10 +22,7 @@ const giftCardSchema = new mongoose.Schema({
         ref: 'Platform',
         required: true
     },
-    giftcardType: {
-        type: String,
-        required: true
-    },
+
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'GiftCardCategory',

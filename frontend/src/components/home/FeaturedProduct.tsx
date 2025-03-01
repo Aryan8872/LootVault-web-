@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import ProductCard from '../product/ProductCard';
 import useAxiosInterceptor from "../../interceptors/AxiosInstance";
+import CardSlider from './CardSlider';
 
 
 const FeaturedProduct = () => {
@@ -40,8 +41,13 @@ const FeaturedProduct = () => {
         try {
             setLoading(true)
             const response = await axiosInstance.get<ApiResponse>('/game/')
-            const { games: gamesData } = response.data
-            setGames(gamesData)
+            const skinResponse = await axiosInstance.get('/skins/')
+            const games = response.data.games.map((game:any)=>({
+                ...game,
+                type:"game"
+            }))
+            const skins = skinResponse.data.map((skin:any)=>({...skin,type:"skin"}))
+            setGames([...games,...skins])
         } catch (e) {
             setError(e instanceof Error ? e.message : 'An error occurred')
             console.error('API Error:', e)
@@ -50,22 +56,13 @@ const FeaturedProduct = () => {
         }
     }
     return (
-        <div className='flex flex-col gap-10 items-center font-semibold overflow-hidden'>
-            <div>
-                <span className='font-nunitobold text-2xl'>FEATURED PRODUCT</span>
-            </div>
+        <div className="flex flex-col items-center gap-10">
+        <div>
+        <span className='font-nunitobold text-2xl'>Featured Products</span>
 
-            <div className='flex gap-9 mb-4'>
-            {games.map((game) => (
-                <ProductCard
-                    key={game._id}
-                    product={game}
-                />
-            ))}
-            </div>
-
-
-        </div>
+       </div>
+        <CardSlider products={games}/>
+    </div>
     )
 }
 

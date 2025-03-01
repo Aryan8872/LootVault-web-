@@ -53,7 +53,10 @@ export const NavBar: React.FC = () => {
                         >
                             Add
                         </button>
+                        
                         <span onClick={()=>navigate("/forum")}>Forum</span>
+                        <span onClick={()=>navigate("/user-profile")}>seller</span>
+
 
 
                         {/* Auth Buttons - Hidden on mobile */}

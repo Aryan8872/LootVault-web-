@@ -1,4 +1,6 @@
 const gameModel = require("../../models/GameModel");
+const skinModel = require("../../models/SkinModel");
+
 const upload = require("../../middlewares/uploads");
 const { default: mongoose } = require("mongoose");
 
@@ -52,7 +54,7 @@ const findGamesById = async (req, res) => {
   }
 
   try {
-    const game = await gameModel.findById(id);
+    const game = await gameModel.findById(id).populate('gamePlatform', 'platformName').populate('category', 'categoryName');
     if (!game) {
       return res.status(404).json({ error: "Game not found" });
     }
@@ -63,75 +65,111 @@ const findGamesById = async (req, res) => {
   }
 };
 const addGame = async (req, res) => {
+  try {
+    upload(req, res, async (err) => {
+      if (err) {
+        console.log(`Error occurred while saving game: ${err}`);
+        return res.status(500).json({ message: 'Image upload failed' });
+      }
+      console.log(req.body)
 
-  upload(req, res, async (err) => {
+      const { gameName, gamePrice, gameDescription, gamePlatform, gameType, popularity, category, gameImagePath } = req.body;
 
-    if (err) {
-      console.log(`errror occured while saving card + ${err}`)
-    }
-    try {
-      const { gameName, gamePrice, gameDescription, gamePlatform, gameType, popularity, category } = req.body;
-
-      // Check if all required fields are provided
+      // Check if all required fields are provided  
       if (!gameName || !gamePrice || !gameDescription) {
         return res.status(400).json({ message: 'Missing required fields' });
       }
 
-      // Prepare the product data object, including the image path if uploaded
+      // Prepare the game data object
       const gameData = {
         gameName,
-        gamePrice: parseFloat(gamePrice), // Make sure to convert price to a number
+        gamePrice: parseFloat(gamePrice), // Convert price to a number
         gameDescription,
         gamePlatform,
         gameType,
         popularity,
-        category
+        category,
       };
 
-      // If there's an uploaded file, set the image path
+      // Handle Image Path for Web and Flutter
       if (req.file) {
-        gameData.gameImagePath = `${req.file.filename}`; // Save the image path
+        // Web: File is uploaded
+        gameData.gameImagePath = req.file.filename;
+      } else if (gameImagePath) {
+        // Flutter: Image is sent as filename
+        gameData.gameImagePath = gameImagePath;
       }
 
+      // Save to database
       const newGame = new gameModel(gameData);
+      const savedGame = await newGame.save();
 
-      const savedProduct = await newGame.save();
-
-
-      res.status(201).json(savedProduct);
-    } catch (error) {
-      console.error('Error adding product:', error);
-      res.status(500).json({ message: 'Internal Server Error' });
-    }
-  }
-  )
-};
-
-
-const updateGameById = async (req, res) => {
-
-  try {
-    const updateData = { ...req.body };
-    if (req.file) {
-      updateData.imagePath = `/uploads/${req.file.filename}`; // Save the image path
-    }
-
-    const updatedProduct = await gameModel.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true } // Return the updated document
-    );
-
-    if (!updatedProduct) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-
-    res.status(200).json(updatedProduct);
+      res.status(201).json(savedGame);
+    });
   } catch (error) {
-    console.error('Error updating product:', error);
+    console.error('Error adding game:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+
+
+
+const updateGameById = async (req, res) => {
+  try {
+    upload(req, res, async (err) => {
+      if (err) {
+        console.log(`Error occurred while uploading image: ${err}`);
+        return res.status(500).json({ message: 'Image upload failed' });
+      }
+
+      // Log the body for debugging
+      console.log('Updated request body:', req.body);
+
+      const { gameName, gamePrice, gameDescription, gamePlatform, category, gameImagePath } = req.body;
+
+      // Check if all required fields are provided  
+      if (!gameName || !gamePrice || !gameDescription) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
+
+      // Prepare the game data object
+      const updateData = {
+        gameName,
+        gamePrice: parseFloat(gamePrice), // Convert price to a number
+        gameDescription,
+        gamePlatform,
+        category,
+      };
+
+      // Handle Image Path for Web and Flutter
+      if (req.file) {
+        // If new image uploaded, use the new image path
+        updateData.gameImagePath = req.file.filename;
+      } else if (gameImagePath) {
+        // Flutter: If no new image uploaded, use the existing image path
+        updateData.gameImagePath = gameImagePath;
+      }
+
+      // Perform the database update
+      const updatedGame = await gameModel.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        { new: true } // Return the updated document
+      );
+
+      if (!updatedGame) {
+        return res.status(404).json({ message: 'Game not found' });
+      }
+
+      // Respond with the updated product
+      res.status(200).json(updatedGame);
+    });
+  } catch (error) {
+    console.error('Error updating game:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
 
 
 // Controller to delete a product by ID
@@ -212,63 +250,79 @@ const advancedSearchGames = async (req, res) => {
       page = 1,
       limit = 10,
       sortBy = "gamePrice",
-      order = "asc"
+      order = "asc",
+      type, // "game", "skin", or both
     } = req.query;
 
     const searchQuery = {};
+    const priceField = type === "skin" ? "skinPrice" : "gamePrice";
 
-    // Text search for gameName and gameDescription
+    // Text search
     if (q) {
       searchQuery.$or = [
         { gameName: { $regex: q, $options: 'i' } },
-        { gameDescription: { $regex: q, $options: 'i' } }
+        { gameDescription: { $regex: q, $options: 'i' } },
+        { skinName: { $regex: q, $options: 'i' } },
+        { skinDescription: { $regex: q, $options: 'i' } },
       ];
     }
 
     // Price range filter
     if (minPrice !== undefined || maxPrice !== undefined) {
-      searchQuery.gamePrice = {};
-      if (minPrice !== undefined) searchQuery.gamePrice.$gte = parseFloat(minPrice);
-      if (maxPrice !== undefined) searchQuery.gamePrice.$lte = parseFloat(maxPrice);
+      searchQuery[priceField] = {};
+      if (minPrice !== undefined) searchQuery[priceField].$gte = parseFloat(minPrice);
+      if (maxPrice !== undefined) searchQuery[priceField].$lte = parseFloat(maxPrice);
     }
 
-    // Filter by category (allow multiple categories, convert to ObjectIds)
+    // Category filter
     if (category) {
-      const categoriesArray = category.split(",");  // Split into array if multiple categories
+      const categoriesArray = category.split(",");
       if (categoriesArray.every(id => mongoose.Types.ObjectId.isValid(id))) {
         searchQuery.category = { $in: categoriesArray.map(id => new mongoose.Types.ObjectId(id)) };
       }
     }
 
-    // Filter by platform (convert to ObjectId)
+    // Platform filter
     if (platform && mongoose.Types.ObjectId.isValid(platform)) {
       searchQuery.gamePlatform = new mongoose.Types.ObjectId(platform);
+      searchQuery.skinPlatform = new mongoose.Types.ObjectId(platform);
     }
 
     // Sorting
     const sortOptions = {};
     sortOptions[sortBy] = order === 'asc' ? 1 : -1;
 
-    // Execute search
-    const games = await gameModel.find(searchQuery)
-      .populate("category", "categoryName")
-      .populate("gamePlatform", "platformName")
-      .sort(sortOptions)
-      .skip((parseInt(page) - 1) * parseInt(limit))
-      .limit(parseInt(limit));
+    // Fetch Games
+    let games = [];
+    let skins = [];
+  
+      games = await gameModel.find(searchQuery)
+        .populate("category", "categoryName")
+        .populate("gamePlatform", "platformName")
+        .sort(sortOptions)
+        .skip((parseInt(page) - 1) * parseInt(limit))
+        .limit(parseInt(limit));
+    
+   
+      skins = await skinModel.find(searchQuery)
+        .populate("category", "categoryName")
+        .populate("skinPlatform", "platformName")
+        .sort(sortOptions)
+        .skip((parseInt(page) - 1) * parseInt(limit))
+        .limit(parseInt(limit));
+    
 
-    const total = await gameModel.countDocuments(searchQuery);
-    const totalPages = Math.ceil(total / parseInt(limit));
-    const hasMore = page < totalPages;
+    // Combine Results
+    const results = [...games, ...skins];
+    console.log(`results ${results}`)
+    results.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1) * (order === 'asc' ? 1 : -1));
 
     res.status(200).json({
       error: false,
-      total,
-      totalPages,
+      total: results.length,
       currentPage: parseInt(page),
       limit: parseInt(limit),
-      hasMore,
-      games
+      games: results,
     });
 
   } catch (err) {
@@ -279,6 +333,7 @@ const advancedSearchGames = async (req, res) => {
     });
   }
 };
+
 
 
 

@@ -65,15 +65,19 @@ const likePost = async (req: ForumRequest, res: Response) => {
     try {
         const { id } = req.params;
         const user = req.body.user;
+        console.log(user)
 
         if (!user || !user.id) {
             return res.status(400).json({ message: 'Invalid user data' });
         }
+        console.log("dawd")
 
         const userId = new mongoose.Types.ObjectId(user.id);
 
         // Fetch the post and populate likes & dislikes
-        const post = await PostModel.findById(id).populate('likes dislikes', '_id');
+        const post = await PostModel.findById(id).populate('likes dislikes', '_id',).populate('user', '_id username email');
+
+        ;
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
         }
@@ -95,6 +99,7 @@ const likePost = async (req: ForumRequest, res: Response) => {
         await post.save();
 
         // Respond with the updated post
+        console.log(post)
         res.status(200).json(post);
     } catch (error) {
         console.error('Error processing like/unlike:', error);
@@ -108,35 +113,34 @@ const dislikePost = async (req: ForumRequest, res: Response) => {
         const { id } = req.params;
         const user = req.body.user;
 
-        if (!user || !user.id) {
+        // Handle both string and object formats
+        const userId = typeof user === 'string' ? new mongoose.Types.ObjectId(user) :
+                      user?.id ? new mongoose.Types.ObjectId(user.id) : null;
+
+        if (!userId) {
             return res.status(400).json({ message: 'Invalid user data' });
         }
 
-        const userId = new mongoose.Types.ObjectId(user.id);
+        const post = await PostModel.findById(id)
+            .populate('likes dislikes', '_id')
+            .populate('user', '_id username email');
 
-        // Fetch the post and populate likes & dislikes
-        const post = await PostModel.findById(id).populate('likes dislikes', '_id');
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
         }
 
-        // Remove like if the user had previously liked
+        // Remove like if previously liked
         post.likes = post.likes.filter((like: mongoose.Types.ObjectId) => !like.equals(userId));
 
-        // Check if the user already disliked the post
+        // Toggle dislike
         const dislikeIndex = post.dislikes.findIndex((dislike: mongoose.Types.ObjectId) => dislike.equals(userId));
         if (dislikeIndex > -1) {
-            // Remove the dislike if already disliked
             post.dislikes.splice(dislikeIndex, 1);
         } else {
-            // Add the dislike if not already disliked
             post.dislikes.push(userId);
         }
 
-        // Save the updated post
         await post.save();
-
-        // Respond with the updated post
         res.status(200).json(post);
     } catch (error) {
         console.error('Error disliking post:', error);
@@ -145,13 +149,32 @@ const dislikePost = async (req: ForumRequest, res: Response) => {
 };
 
 
+const getComments = async (req: ForumRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        // Find the post by ID
+        const post = await PostModel.findById(id).populate('comments.user', 'username'); // Assuming 'comments.user' is a reference to a User model
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // Return the comments from the post
+        res.status(200).json(post.comments);
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
 
 
 const addComment = async (req: ForumRequest, res: Response) => {
     try {
         const { id } = req.params;
         const { content } = req.body;
-        const user = req.body.user.id; // Assuming req.user is available from middleware
+        const user = req.body.user?.id; // Assuming req.user is available from middleware
         console.log(user);
         console.log(content);
 
@@ -186,6 +209,50 @@ const addComment = async (req: ForumRequest, res: Response) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
+
+const addReply = async (req: Request, res: Response) => {
+    try {
+        const { postId, commentId } = req.params;
+        const { content } = req.body;
+        const user = req.body.user;
+
+        if (!user) return res.status(401).json({ message: "Unauthorized" });
+        if (!content) return res.status(400).json({ message: "Content is required" });
+
+        // Find the post by postId
+        const post = await PostModel.findById(postId);
+        if (!post) return res.status(404).json({ message: "Post not found" });
+
+        // Find the comment within the post's comments array
+        const comment = (post.comments as Types.DocumentArray<any>).id(commentId);
+        if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+        // Create a new reply object
+        const newReply = {
+            _id: new Types.ObjectId(),
+            user: new Types.ObjectId(user),
+            content,
+            replies: [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        // Push the new reply into the replies array of the comment
+        comment.replies.push(newReply);
+
+        // Save the updated post document
+        await post.save();
+
+        res.status(201).json(newReply);
+    } catch (error) {
+        console.error("Error adding reply:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+  
+
+
 
 
 // Edit a comment
@@ -281,7 +348,7 @@ const deletePost = async (req: ForumRequest, res: Response) => {
 
 // Edit a post
 const editPost = async (req: ForumRequest, res: Response) => {
- try {
+    try {
         const { id } = req.params;
         const { title, content } = req.body;
         const user = req.user?.id;
@@ -313,4 +380,6 @@ module.exports = {
     deleteComment,
     deletePost,
     editPost,
+    addReply,
+    getComments,
 };

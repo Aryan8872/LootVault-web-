@@ -1,10 +1,11 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
-
+// Define the Comment and Post models
 interface IComment extends Document {
     _id: Types.ObjectId;
     user: Types.ObjectId;
     content: string;
+    replies: IComment[]; // replies are also of type IComment
     createdAt: Date;
     updatedAt: Date;
 }
@@ -23,6 +24,11 @@ interface IPost extends Document {
 const commentSchema: Schema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     content: { type: String, required: true },
+    replies: [{
+        user: { type: Schema.Types.ObjectId, ref: 'User' },
+        content: String,
+        createdAt: { type: Date, default: Date.now }
+    }],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 });
